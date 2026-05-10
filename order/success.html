@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Order Confirmed — DOT Sticker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --ink:#0b0b0c; --paper:#f5f2ea; --signal:#ffcc00; --rust:#c2410c; --ok:#16a34a; --mute:#6b7280; }
+      html,body { background:var(--paper); color:var(--ink); font-family:"Archivo",sans-serif; min-height:100vh; }
+      .mono { font-family:"JetBrains Mono",monospace; }
+      .display { font-family:"Archivo",sans-serif; font-weight:900; letter-spacing:-0.02em; line-height:0.92; }
+
+      .btn-primary { background:var(--signal); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+      .btn-primary:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+      .btn-ghost { background:transparent; color:var(--ink); border:2px solid var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
+      .btn-ghost:hover { background:var(--ink); color:var(--paper); }
+      .card { background:#fff; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+
+      /* Checkmark animation */
+      @keyframes pop-in { from { transform:scale(0.5) rotate(-10deg); opacity:0; } to { transform:scale(1) rotate(0deg); opacity:1; } }
+      @keyframes slide-up { from { transform:translateY(24px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+      .anim-pop { animation:pop-in 350ms cubic-bezier(.2,.7,.2,1) both; }
+      .anim-up-1 { animation:slide-up 350ms 120ms cubic-bezier(.2,.7,.2,1) both; }
+      .anim-up-2 { animation:slide-up 350ms 220ms cubic-bezier(.2,.7,.2,1) both; }
+      .anim-up-3 { animation:slide-up 350ms 320ms cubic-bezier(.2,.7,.2,1) both; }
+      .anim-up-4 { animation:slide-up 350ms 420ms cubic-bezier(.2,.7,.2,1) both; }
+
+      /* Signal stripe behind header */
+      .signal-stripe { background:var(--signal); border-bottom:2px solid var(--ink); }
+
+      /* Step progress — all done */
+      .step-circle { width:28px; height:28px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font-family:"JetBrains Mono",monospace; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+      .step-done .step-circle { background:var(--ink); color:var(--paper); }
+      .step-line { flex:1; height:2px; background:var(--ink); opacity:0.5; }
+
+      /* What's next step items */
+      .next-step { display:flex; gap:16px; align-items:flex-start; }
+      .next-num { width:32px; height:32px; background:var(--signal); border:2px solid var(--ink); display:grid; place-items:center; font-family:"JetBrains Mono",monospace; font-size:0.75rem; font-weight:700; flex-shrink:0; }
+
+      /* Mini door */
+      .mini-door {
+        background-color:#c5c3be;
+        background-image:linear-gradient(180deg,rgba(255,255,255,0.14) 0%,rgba(0,0,0,0.05) 55%,rgba(0,0,0,0.2) 100%),
+                         repeating-linear-gradient(180deg,rgba(0,0,0,0.035) 0 1px,transparent 1px 16px);
+        border:2px solid var(--ink); box-shadow:inset 0 0 0 6px #b2b0ab, 4px 4px 0 var(--ink);
+        display:flex; align-items:center; justify-content:center;
+      }
+
+      /* Confetti dots */
+      .confetti-dot { position:absolute; border-radius:50%; animation:confetti-fall linear forwards; }
+      @keyframes confetti-fall {
+        0%   { transform:translateY(0) rotate(0deg); opacity:1; }
+        100% { transform:translateY(80px) rotate(360deg); opacity:0; }
+      }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="border-b-2 border-black sticky top-0 bg-[var(--paper)] z-40">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+        <a href="../index.html" class="flex items-center gap-2 font-black tracking-tight shrink-0">
+          <span class="w-7 h-7 bg-[var(--signal)] border-2 border-black grid place-items-center mono text-xs">D</span>
+          <span class="hidden sm:block">DOT STICKER PRO</span>
+        </a>
+        <div class="w-px h-6 bg-black/20 shrink-0 hidden sm:block"></div>
+        <!-- All steps done -->
+        <div class="flex items-center gap-2 flex-1 max-w-xs">
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">DESIGN</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">SHIP</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">REVIEW</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Signal banner -->
+    <div class="signal-stripe py-2 px-6">
+      <div class="max-w-7xl mx-auto flex items-center gap-3">
+        <span class="mono text-xs font-bold uppercase tracking-widest">Order confirmed</span>
+        <span class="mono text-xs text-[var(--ink)]/60">·</span>
+        <span id="banner-order-num" class="mono text-xs font-bold"></span>
+        <span class="ml-auto mono text-xs text-[var(--ink)]/60">PDF being prepared…</span>
+      </div>
+    </div>
+
+    <main class="max-w-5xl mx-auto px-6 py-14">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+
+        <!-- ── LEFT (7/12) ── -->
+        <div class="lg:col-span-7 space-y-6">
+
+          <!-- Hero check -->
+          <div class="anim-pop flex flex-col items-start gap-4">
+            <div class="relative">
+              <div class="w-20 h-20 bg-[var(--ok)] border-2 border-[var(--ink)] grid place-items-center"
+                   style="box-shadow:5px 5px 0 var(--ink); font-size:2.5rem">✓</div>
+              <!-- confetti wrapper -->
+              <div id="confetti" class="absolute inset-0 pointer-events-none overflow-visible"></div>
+            </div>
+            <div>
+              <p class="mono text-xs text-[var(--mute)] uppercase tracking-widest mb-1">You're good to go</p>
+              <h1 class="display" style="font-size:clamp(3rem,6vw,5rem)">Order<br>placed!</h1>
+            </div>
+          </div>
+
+          <!-- What's next -->
+          <div class="card p-6 anim-up-1">
+            <div class="mono text-[10px] uppercase tracking-widest text-[var(--mute)] mb-5">What happens next</div>
+            <div class="space-y-5">
+              <div class="next-step">
+                <div class="next-num">1</div>
+                <div>
+                  <div class="font-bold">PDF sent to your inbox</div>
+                  <div class="mono text-xs text-[var(--mute)] mt-0.5">Your print-ready DOT sticker PDF lands in <span id="next-email" class="font-bold text-[var(--ink)]">your email</span> within minutes. Print it yourself or bring it to any print shop.</div>
+                </div>
+              </div>
+              <div class="next-step">
+                <div class="next-num">2</div>
+                <div>
+                  <div class="font-bold">Production starts today</div>
+                  <div class="mono text-xs text-[var(--mute)] mt-0.5">Your vinyl stickers enter production within 2 hours. UV-resistant, outdoor-grade material.</div>
+                </div>
+              </div>
+              <div class="next-step">
+                <div class="next-num">3</div>
+                <div>
+                  <div class="font-bold" id="next-ship-label">Ships in 2–3 business days</div>
+                  <div class="mono text-xs text-[var(--mute)] mt-0.5">You'll receive a tracking number by email as soon as your package leaves our facility.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order details -->
+          <div class="card p-6 anim-up-2">
+            <div class="mono text-[10px] uppercase tracking-widest text-[var(--mute)] mb-5">Order details</div>
+            <div class="grid sm:grid-cols-2 gap-5">
+              <!-- Sticker preview -->
+              <div>
+                <div class="mono text-[10px] text-[var(--mute)] uppercase mb-2">Your sticker</div>
+                <div class="mini-door rounded-sm overflow-hidden" style="width:100px; height:130px;">
+                  <!-- text sticker -->
+                  <div id="det-sticker" class="bg-white border border-black p-1.5 text-center mx-2 w-full"
+                       style="box-shadow:2px 2px 0 #000">
+                    <div id="det-company" class="font-black leading-tight" style="font-size:8px">YOUR COMPANY</div>
+                    <div class="h-px w-5 mx-auto my-1 bg-[var(--rust)]"></div>
+                    <div class="mono" style="font-size:6px">USDOT <span id="det-usdot" class="font-bold">———</span></div>
+                    <div class="mono" style="font-size:6px">MC <span id="det-mc" class="font-bold">———</span></div>
+                  </div>
+                  <!-- uploaded image (hidden by default) -->
+                  <img id="det-upload-img" src="" alt="Uploaded sticker"
+                       style="display:none; width:80px; height:auto; max-height:108px; object-fit:contain; border:1.5px solid #000; box-shadow:2px 2px 0 #000;" />
+                </div>
+              </div>
+              <!-- Summary table -->
+              <div class="space-y-3">
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Order #</div>
+                  <div id="det-order-num" class="font-bold mono mt-0.5">—</div>
+                </div>
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Sticker size</div>
+                  <div id="det-size" class="font-bold mt-0.5">—</div>
+                </div>
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Quantity</div>
+                  <div id="det-qty" class="font-bold mt-0.5">—</div>
+                </div>
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Shipping</div>
+                  <div id="det-ship" class="font-bold mt-0.5">—</div>
+                </div>
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Total paid</div>
+                  <div id="det-total" class="display text-2xl mt-0.5">$—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-3 anim-up-3">
+            <a href="../index.html" class="btn-primary px-6 py-3 mono font-bold text-sm">
+              ← BACK TO HOME
+            </a>
+            <button id="btn-pdf"
+              class="btn-ghost px-6 py-3 mono font-bold text-sm">
+              ↓ DOWNLOAD PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- ── RIGHT (5/12) sticky ── -->
+        <div class="lg:col-span-5 lg:sticky lg:top-24 space-y-4 anim-up-4">
+
+          <!-- FMCSA reminder -->
+          <div class="card p-6 bg-[var(--ink)] text-[var(--paper)]">
+            <div class="mono text-[10px] text-[var(--signal)] uppercase tracking-widest mb-3">FMCSA Reminder</div>
+            <p class="mono text-xs leading-relaxed mb-4">Per 49 CFR § 390.21, markings must appear on <strong class="text-[var(--signal)]">both sides</strong> of the power unit. Each sticker set covers driver and passenger doors.</p>
+            <div class="border border-white/20 p-3 mono text-xs space-y-1">
+              <div class="flex justify-between"><span class="text-white/60">Driver side</span><span class="text-[var(--ok)]">✓ Covered</span></div>
+              <div class="flex justify-between"><span class="text-white/60">Passenger side</span><span class="text-[var(--ok)]">✓ Covered</span></div>
+              <div class="flex justify-between"><span class="text-white/60">PDF copy</span><span class="text-[var(--ok)]">✓ Emailed</span></div>
+            </div>
+          </div>
+
+          <!-- Need help -->
+          <div class="card p-5">
+            <div class="mono text-[10px] uppercase tracking-widest text-[var(--mute)] mb-3">Need help?</div>
+            <ul class="space-y-2 mono text-xs text-[var(--mute)]">
+              <li class="flex gap-2"><span>📧</span><span>Check your spam folder if the PDF doesn't arrive within 5 minutes.</span></li>
+              <li class="flex gap-2"><span>🔁</span><span>Wrong info? Reply to the confirmation email and we'll reprint for free.</span></li>
+              <li class="flex gap-2"><span>📦</span><span>Tracking number sent within 48 hours of production.</span></li>
+            </ul>
+            <a href="mailto:support@dotstickerpro.com"
+               class="btn-ghost mt-4 px-4 py-2 mono text-xs font-bold w-full">
+              CONTACT SUPPORT
+            </a>
+          </div>
+
+          <!-- Order another -->
+          <div class="border-2 border-black p-5 bg-[var(--signal)]">
+            <div class="font-black text-lg mb-1">Need more stickers?</div>
+            <p class="mono text-xs mb-4">Order 4+ stickers and get 10% off automatically.</p>
+            <a href="../index.html" class="btn-ghost px-4 py-2.5 mono text-sm font-bold w-full">
+              ORDER ANOTHER →
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t-2 border-black mt-10">
+      <div class="max-w-7xl mx-auto px-6 py-6 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-2 font-black tracking-tight">
+          <span class="w-6 h-6 bg-[var(--signal)] border-2 border-black grid place-items-center mono text-[10px]">D</span>
+          <span class="text-sm">DOT STICKER PRO</span>
+        </div>
+        <p class="mono text-[10px] text-[var(--mute)]">FMCSA 49 CFR § 390.21 compliant · 5-year outdoor vinyl · Made in the USA</p>
+      </div>
+    </footer>
+
+    <script>
+      // Load confirmation from sessionStorage
+      let conf = {};
+      try { conf = JSON.parse(sessionStorage.getItem('dot_success') || '{}'); } catch(e) {}
+
+      const SIZE_NAMES = { A:'Size A — 30 × 18 cm', B:'Size B — 45 × 25 cm', C:'Size C — 60 × 35 cm' };
+      const SHIP_NAMES = { standard:'Standard Ground', express:'Express Shipping' };
+
+      // If no confirmation data, user arrived directly — redirect home
+      if (!conf.orderNum) {
+        window.location.href = '../index.html';
+      }
+
+      // Populate
+      document.getElementById('banner-order-num').textContent  = conf.orderNum || '';
+      document.getElementById('next-email').textContent        = conf.email    || 'your email';
+      document.getElementById('next-ship-label').textContent   = `Ships in ${conf.shipEta || '2–3 business days'}`;
+      document.getElementById('det-order-num').textContent     = conf.orderNum || '—';
+      document.getElementById('det-size').textContent          = SIZE_NAMES[conf.size] || '—';
+      document.getElementById('det-qty').textContent           = conf.qty ? `${conf.qty} sticker${conf.qty > 1 ? 's' : ''}` : '—';
+      document.getElementById('det-ship').textContent          = SHIP_NAMES[conf.ship] || '—';
+      document.getElementById('det-total').textContent         = conf.total ? `$${conf.total}` : '$—';
+
+      // Sticker preview
+      document.getElementById('det-company').textContent = (conf.name  || 'YOUR COMPANY');
+      document.getElementById('det-usdot').textContent   = conf.usdot  || '———';
+      document.getElementById('det-mc').textContent      = conf.mc     || '———';
+
+      // Upload mode
+      const uploadUrl = conf.uploadUrl || (() => { try { return sessionStorage.getItem('dot_upload_img') || ''; } catch(e) { return ''; } })();
+      if (conf.mode === 'upload' && uploadUrl) {
+        document.getElementById('det-sticker').style.display    = 'none';
+        const uImg = document.getElementById('det-upload-img');
+        uImg.src           = uploadUrl;
+        uImg.style.display = 'block';
+      }
+
+      // PDF button (placeholder)
+      document.getElementById('btn-pdf').addEventListener('click', () => {
+        alert('Your PDF has been emailed to ' + (conf.email || 'your inbox') + '. Check your spam folder if it doesn\'t arrive within 5 minutes.');
+      });
+
+      // Confetti burst
+      function spawnConfetti() {
+        const colors = ['#ffcc00','#16a34a','#c2410c','#fff','#0b0b0c'];
+        const wrap = document.getElementById('confetti');
+        for (let i = 0; i < 18; i++) {
+          const dot = document.createElement('div');
+          const size = 6 + Math.random() * 8;
+          dot.className = 'confetti-dot';
+          dot.style.cssText = `
+            width:${size}px; height:${size}px;
+            background:${colors[Math.floor(Math.random() * colors.length)]};
+            border:1px solid #0b0b0c;
+            left:${20 + Math.random() * 60}px;
+            top:${10 + Math.random() * 40}px;
+            animation-duration:${0.6 + Math.random() * 0.8}s;
+            animation-delay:${Math.random() * 0.3}s;
+          `;
+          wrap.appendChild(dot);
+        }
+        setTimeout(() => wrap.innerHTML = '', 1500);
+      }
+      spawnConfetti();
+
+      // Clean up upload img from sessionStorage after reading
+      try { sessionStorage.removeItem('dot_upload_img'); } catch(e) {}
+    </script>
+  </body>
+</html>

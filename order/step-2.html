@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Size &amp; Shipping — DOT Sticker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --ink:#0b0b0c; --paper:#f5f2ea; --signal:#ffcc00; --rust:#c2410c; --ok:#16a34a; --mute:#6b7280; }
+      html,body { background:var(--paper); color:var(--ink); font-family:"Archivo",sans-serif; }
+      .mono { font-family:"JetBrains Mono",monospace; }
+      .display { font-family:"Archivo",sans-serif; font-weight:900; letter-spacing:-0.02em; line-height:0.92; }
+
+      .btn-primary { background:var(--signal); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; }
+      .btn-primary:hover:not(:disabled) { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+      .btn-primary:disabled { opacity:0.38; cursor:not-allowed; }
+      .btn-ghost { background:transparent; color:var(--ink); border:2px solid var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; }
+      .btn-ghost:hover { background:var(--ink); color:var(--paper); }
+      .card { background:#fff; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+      .chip { border:1.5px solid var(--ink); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.72rem; }
+
+      .field-label { display:block; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--mute); margin-bottom:4px; }
+      .field-input { width:100%; border:2px solid var(--ink); background:#fff; font-family:"JetBrains Mono",monospace; font-size:0.875rem; padding:10px 14px; outline:none; transition:background 150ms cubic-bezier(.2,.7,.2,1), border-color 150ms; }
+      .field-input:focus { background:var(--signal); }
+      .field-input.is-error { border-color:var(--rust); }
+      .field-input.is-valid { border-color:var(--ok); }
+      .field-error { display:none; font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--rust); margin-top:4px; }
+      .field-error.visible { display:block; }
+
+      /* Progress */
+      .step-circle { width:28px; height:28px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font-family:"JetBrains Mono",monospace; font-size:0.65rem; font-weight:700; flex-shrink:0; transition:all 150ms; }
+      .step-active .step-circle { background:var(--signal); }
+      .step-done   .step-circle { background:var(--ink); color:var(--paper); }
+      .step-line { flex:1; height:2px; background:var(--ink); opacity:0.2; }
+      .step-done + .step-line { opacity:0.5; }
+
+      /* Size cards */
+      .size-card { border:2px solid var(--ink); background:#fff; cursor:pointer; position:relative; transition:all 150ms cubic-bezier(.2,.7,.2,1); }
+      .size-card:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink); }
+      .size-card.selected { background:var(--signal); box-shadow:5px 5px 0 var(--ink); }
+      .size-card .pop-badge { display:none; position:absolute; top:-10px; right:12px; background:var(--rust); color:#fff; font-family:"JetBrains Mono",monospace; font-size:0.62rem; font-weight:700; padding:2px 8px; border:1.5px solid var(--ink); letter-spacing:0.06em; }
+      .size-card.show-badge .pop-badge { display:block; }
+
+      /* Shipping options */
+      .ship-option { border:2px solid var(--ink); background:#fff; cursor:pointer; transition:all 150ms cubic-bezier(.2,.7,.2,1); display:flex; align-items:center; gap:12px; padding:14px 16px; }
+      .ship-option:hover { background:var(--paper); }
+      .ship-option.selected { background:var(--signal); }
+      .ship-radio { width:18px; height:18px; border:2px solid var(--ink); border-radius:50%; display:grid; place-items:center; flex-shrink:0; transition:all 150ms; }
+      .ship-option.selected .ship-radio::after { content:''; width:8px; height:8px; border-radius:50%; background:var(--ink); }
+
+      /* Qty controls */
+      .qty-btn { width:36px; height:36px; border:2px solid var(--ink); background:#fff; cursor:pointer; font-size:1.1rem; font-weight:700; display:grid; place-items:center; transition:all 150ms; flex-shrink:0; }
+      .qty-btn:hover { background:var(--ink); color:var(--paper); }
+      .qty-input { width:60px; text-align:center; border:2px solid var(--ink); font-family:"JetBrains Mono",monospace; font-size:1rem; font-weight:700; padding:6px; outline:none; }
+      .qty-input:focus { background:var(--signal); }
+
+      /* Card heading */
+      .card-heading { display:flex; align-items:center; gap:8px; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1.25rem; }
+      .card-heading .num { width:20px; height:20px; border:2px solid var(--ink); display:grid; place-items:center; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+
+      /* Mini sticker in summary */
+      .mini-sticker { background:#fff; border:2px solid var(--ink); padding:10px 14px; text-align:center; box-shadow:3px 3px 0 var(--ink); }
+
+      /* Select dropdown */
+      select.field-input { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230b0b0c' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="border-b-2 border-black sticky top-0 bg-[var(--paper)] z-40">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+        <a href="../index.html" class="flex items-center gap-2 font-black tracking-tight shrink-0">
+          <span class="w-7 h-7 bg-[var(--signal)] border-2 border-black grid place-items-center mono text-xs">D</span>
+          <span class="hidden sm:block">DOT STICKER PRO</span>
+        </a>
+        <div class="w-px h-6 bg-black/20 shrink-0 hidden sm:block"></div>
+        <div class="flex items-center gap-2 flex-1 max-w-xs">
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">DESIGN</span>
+          </div>
+          <div class="step-line step-done"></div>
+          <div class="flex items-center gap-1.5 step-active">
+            <div class="step-circle">02</div>
+            <span class="mono text-xs font-bold hidden sm:block">SHIP</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="flex items-center gap-1.5">
+            <div class="step-circle">03</div>
+            <span class="mono text-xs text-[var(--mute)] hidden sm:block">REVIEW</span>
+          </div>
+        </div>
+        <span class="ml-auto mono text-xs text-[var(--mute)] shrink-0 hidden md:block">Step 2 of 3</span>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+
+        <!-- ── LEFT COLUMN (5/12) ── -->
+        <div class="lg:col-span-5 space-y-6">
+          <div>
+            <h1 class="display text-4xl md:text-5xl">Size &amp;<br>shipping.</h1>
+            <p class="mono text-xs text-[var(--mute)] mt-2 uppercase">Choose size, quantity, and where to ship</p>
+          </div>
+
+          <!-- Size selection -->
+          <div class="card p-6">
+            <div class="card-heading"><span class="num">1</span> Sticker Size</div>
+            <div class="space-y-3">
+
+              <!-- Size A -->
+              <div class="size-card" data-size="A" data-price="5.99">
+                <div class="p-4 flex items-center justify-between gap-4">
+                  <div class="flex items-center gap-4">
+                    <div>
+                      <div class="mono text-xs text-[var(--mute)]">SIZE A</div>
+                      <div class="display text-2xl leading-none mt-0.5">30 × 18 cm</div>
+                      <div class="mono text-xs mt-1.5 text-[var(--mute)]">2.0" letters · Compact pickups, vans</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="display text-2xl">$5.99</div>
+                    <div class="mono text-[10px] text-[var(--mute)]">per sticker</div>
+                    <div class="mt-1 mono text-[9px]">✓ PDF + printed</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Size B (most popular) -->
+              <div class="size-card show-badge selected" data-size="B" data-price="8.99">
+                <div class="pop-badge">MOST POPULAR</div>
+                <div class="p-4 flex items-center justify-between gap-4">
+                  <div class="flex items-center gap-4">
+                    <div>
+                      <div class="mono text-xs">SIZE B</div>
+                      <div class="display text-2xl leading-none mt-0.5">45 × 25 cm</div>
+                      <div class="mono text-xs mt-1.5">2.5" letters · Box trucks, day cabs</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="display text-2xl">$8.99</div>
+                    <div class="mono text-[10px]">per sticker</div>
+                    <div class="mt-1 mono text-[9px]">✓ PDF + printed + spare</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Size C -->
+              <div class="size-card" data-size="C" data-price="12.99">
+                <div class="p-4 flex items-center justify-between gap-4">
+                  <div class="flex items-center gap-4">
+                    <div>
+                      <div class="mono text-xs text-[var(--mute)]">SIZE C</div>
+                      <div class="display text-2xl leading-none mt-0.5">60 × 35 cm</div>
+                      <div class="mono text-xs mt-1.5 text-[var(--mute)]">3.5" letters · Sleepers, heavy haul</div>
+                    </div>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <div class="display text-2xl">$12.99</div>
+                    <div class="mono text-[10px] text-[var(--mute)]">per sticker</div>
+                    <div class="mt-1 mono text-[9px]">✓ Reflective vinyl option</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="card p-6">
+            <div class="card-heading"><span class="num">2</span> Quantity</div>
+            <div class="flex items-center gap-3">
+              <button class="qty-btn" id="qty-minus">−</button>
+              <input id="qty-input" type="number" min="1" max="99" value="2" class="qty-input" readonly />
+              <button class="qty-btn" id="qty-plus">+</button>
+              <span class="mono text-xs text-[var(--mute)] ml-2">stickers</span>
+            </div>
+            <div id="bulk-hint" class="mono text-xs text-[var(--ok)] mt-3 hidden">
+              ✓ Bulk discount: 10% off applied automatically
+            </div>
+            <p class="mono text-[10px] text-[var(--mute)] mt-2">Order 4+ stickers to get 10% off. PDF included with every sticker.</p>
+          </div>
+
+          <!-- Shipping method -->
+          <div class="card p-6">
+            <div class="card-heading"><span class="num">3</span> Shipping Method</div>
+            <div class="space-y-2">
+              <div class="ship-option selected" data-ship="standard" data-ship-price="0">
+                <div class="ship-radio"></div>
+                <div class="flex-1">
+                  <div class="font-bold text-sm">Standard Ground</div>
+                  <div class="mono text-xs text-[var(--mute)]">2–3 business days · USA &amp; Canada</div>
+                </div>
+                <div class="mono font-bold text-sm">FREE</div>
+              </div>
+              <div class="ship-option" data-ship="express" data-ship-price="9.99">
+                <div class="ship-radio"></div>
+                <div class="flex-1">
+                  <div class="font-bold text-sm">Express Shipping</div>
+                  <div class="mono text-xs text-[var(--mute)]">1 business day · USA only</div>
+                </div>
+                <div class="mono font-bold text-sm">+$9.99</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="card p-6">
+            <div class="card-heading"><span class="num">4</span> Delivery Address</div>
+            <div class="space-y-3">
+              <div>
+                <label class="field-label" for="a-name">Full name *</label>
+                <input id="a-name" type="text" placeholder="John Doe" class="field-input" autocomplete="name" />
+                <div class="field-error" id="a-name-err">Name is required.</div>
+              </div>
+              <div>
+                <label class="field-label" for="a-street">Street address *</label>
+                <input id="a-street" type="text" placeholder="123 Main Street" class="field-input" autocomplete="address-line1" />
+                <div class="field-error" id="a-street-err">Street address is required.</div>
+              </div>
+              <div>
+                <label class="field-label" for="a-apt">Apt / Suite / Unit <span style="font-size:0.62rem;opacity:0.7">(optional)</span></label>
+                <input id="a-apt" type="text" placeholder="Suite 200" class="field-input" autocomplete="address-line2" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="field-label" for="a-city">City *</label>
+                  <input id="a-city" type="text" placeholder="Dallas" class="field-input" autocomplete="address-level2" />
+                  <div class="field-error" id="a-city-err">City is required.</div>
+                </div>
+                <div>
+                  <label class="field-label" for="a-state">State *</label>
+                  <select id="a-state" class="field-input" autocomplete="address-level1">
+                    <option value="">— Select —</option>
+                    <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+                    <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+                    <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+                    <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+                    <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+                    <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+                    <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+                    <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+                    <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+                    <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+                    <option>SD</option><option>TN</option><option selected>TX</option><option>UT</option>
+                    <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+                    <option>WI</option><option>WY</option>
+                  </select>
+                  <div class="field-error" id="a-state-err">State is required.</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="field-label" for="a-zip">ZIP code *</label>
+                  <input id="a-zip" type="text" maxlength="5" placeholder="75001" class="field-input" autocomplete="postal-code" inputmode="numeric" />
+                  <div class="field-error" id="a-zip-err">Valid 5-digit ZIP required.</div>
+                </div>
+                <div>
+                  <label class="field-label" for="a-country">Country *</label>
+                  <select id="a-country" class="field-input" autocomplete="country">
+                    <option value="US" selected>United States</option>
+                    <option value="CA">Canada</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-3 pt-1">
+            <a href="step-1.html" class="btn-ghost px-5 py-3 mono text-sm font-bold">← BACK</a>
+            <button id="btn-continue" class="btn-primary flex-1 px-5 py-3 mono font-bold text-sm" disabled>
+              CONTINUE TO REVIEW →
+            </button>
+          </div>
+        </div>
+
+        <!-- ── RIGHT COLUMN (7/12) sticky — order summary ── -->
+        <div class="lg:col-span-7 lg:sticky lg:top-24 space-y-4">
+
+          <!-- Your sticker summary -->
+          <div class="card p-6">
+            <div class="card-heading">Your Sticker</div>
+            <div class="flex gap-4 items-start">
+              <!-- Mini sticker preview — text mode -->
+              <div id="sum-sticker-text" class="mini-sticker shrink-0" style="min-width:140px">
+                <div id="sum-company" class="font-black text-sm leading-tight">YOUR COMPANY</div>
+                <div class="h-[2px] w-10 mx-auto my-2 bg-[var(--rust)]"></div>
+                <div class="mono text-xs">USDOT <span id="sum-usdot" class="font-bold">———</span></div>
+                <div class="mono text-xs mt-0.5">MC <span id="sum-mc" class="font-bold">———</span></div>
+              </div>
+              <!-- Mini sticker preview — upload mode -->
+              <div id="sum-sticker-img" class="shrink-0 border-2 border-[var(--ink)]" style="min-width:140px; display:none; box-shadow:3px 3px 0 var(--ink)">
+                <img id="sum-upload-img" src="" alt="Uploaded sticker design" style="width:140px; height:auto; max-height:130px; display:block; object-fit:contain;" />
+              </div>
+              <!-- Details -->
+              <div class="min-w-0">
+                <div class="mono text-xs text-[var(--mute)] uppercase">Design</div>
+                <div id="sum-template" class="font-bold capitalize mt-0.5">Classic</div>
+                <a href="step-1.html" class="mono text-xs text-[var(--mute)] underline mt-1 inline-block">Edit design</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order summary -->
+          <div class="card p-6">
+            <div class="card-heading">Order Summary</div>
+
+            <div class="space-y-3">
+              <!-- Size row -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="mono text-xs text-[var(--mute)]">SIZE</div>
+                  <div id="sum-size-label" class="font-bold mt-0.5">Size B — 45 × 25 cm</div>
+                </div>
+                <div class="mono font-bold">$<span id="sum-size-price">8.99</span></div>
+              </div>
+
+              <!-- Qty row -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="mono text-xs text-[var(--mute)]">QUANTITY</div>
+                  <div id="sum-qty-label" class="font-bold mt-0.5">2 stickers</div>
+                </div>
+                <div class="mono font-bold">× <span id="sum-qty">2</span></div>
+              </div>
+
+              <!-- Shipping row -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="mono text-xs text-[var(--mute)]">SHIPPING</div>
+                  <div id="sum-ship-label" class="font-bold mt-0.5">Standard Ground</div>
+                </div>
+                <div class="mono font-bold" id="sum-ship-price">FREE</div>
+              </div>
+
+              <!-- Divider -->
+              <div class="border-t-2 border-black my-3"></div>
+
+              <!-- Subtotal -->
+              <div class="flex items-center justify-between">
+                <div class="mono text-xs text-[var(--mute)]">SUBTOTAL (stickers)</div>
+                <div class="mono font-bold">$<span id="sum-subtotal">17.98</span></div>
+              </div>
+
+              <!-- Total -->
+              <div class="flex items-center justify-between bg-[var(--signal)] px-3 py-2 border-2 border-black -mx-1">
+                <div class="font-black text-lg">TOTAL</div>
+                <div class="display text-2xl">$<span id="sum-total">17.98</span></div>
+              </div>
+            </div>
+
+            <div class="mt-5 space-y-1.5">
+              <div class="flex items-center gap-2 mono text-xs text-[var(--ok)]">
+                <span>✓</span><span>PDF download included — sent instantly</span>
+              </div>
+              <div class="flex items-center gap-2 mono text-xs text-[var(--mute)]">
+                <span>✓</span><span>FMCSA 49 CFR § 390.21 validated</span>
+              </div>
+              <div class="flex items-center gap-2 mono text-xs text-[var(--mute)]">
+                <span>✓</span><span>5-year outdoor vinyl, UV resistant</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compliance note -->
+          <div class="border-2 border-black bg-[var(--ink)] text-[var(--paper)] p-4">
+            <div class="mono text-xs uppercase tracking-widest text-[var(--signal)] mb-2">FMCSA Requirement</div>
+            <p class="text-sm">Both driver and passenger sides of the power unit must display identical markings. Each sticker set covers both sides.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      // ── Load step-1 state ──
+      let step1 = {};
+      try { step1 = JSON.parse(localStorage.getItem('dot_builder') || '{}'); } catch(e) {}
+
+      // Populate sticker summary
+      document.getElementById('sum-company').textContent  = (step1.name  || 'YOUR COMPANY').toUpperCase();
+      document.getElementById('sum-usdot').textContent    = step1.usdot  || '———';
+      document.getElementById('sum-mc').textContent       = step1.noMc ? 'N/A' : (step1.mc || '———');
+      document.getElementById('sum-template').textContent = ({ classic:'Classic', fleet:'Fleet', heavy:'Heavy-Duty', custom:'Custom' })[step1.template] || 'Classic';
+
+      // Upload mode: show image thumbnail instead of text sticker
+      const uploadUrl = step1.uploadUrl || (() => { try { return sessionStorage.getItem('dot_upload_img') || ''; } catch(e) { return ''; } })();
+      if (step1.mode === 'upload' && uploadUrl) {
+        document.getElementById('sum-sticker-text').style.display = 'none';
+        document.getElementById('sum-sticker-img').style.display  = 'block';
+        document.getElementById('sum-upload-img').src             = uploadUrl;
+        document.getElementById('sum-template').textContent       = 'Uploaded design';
+      }
+
+      // ── Step-2 state ──
+      const s2 = { size:'B', sizePrice:8.99, qty:2, ship:'standard', shipPrice:0, address:{} };
+      try {
+        const saved2 = JSON.parse(localStorage.getItem('dot_order') || '{}');
+        if (saved2.size)      s2.size      = saved2.size;
+        if (saved2.sizePrice) s2.sizePrice = saved2.sizePrice;
+        if (saved2.qty)       s2.qty       = saved2.qty;
+        if (saved2.ship)      s2.ship      = saved2.ship;
+        if (saved2.shipPrice !== undefined) s2.shipPrice = saved2.shipPrice;
+        if (saved2.address)   s2.address   = saved2.address;
+      } catch(e) {}
+
+      // ── Size selection ──
+      document.querySelectorAll('.size-card').forEach(card => {
+        if (card.dataset.size === s2.size) card.classList.add('selected');
+        else card.classList.remove('selected');
+
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.size-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          s2.size      = card.dataset.size;
+          s2.sizePrice = parseFloat(card.dataset.price);
+          updateSummary();
+        });
+      });
+
+      // ── Quantity ──
+      const qtyInput = document.getElementById('qty-input');
+      qtyInput.value = s2.qty;
+      document.getElementById('qty-minus').addEventListener('click', () => {
+        if (s2.qty > 1) { s2.qty--; qtyInput.value = s2.qty; updateSummary(); }
+      });
+      document.getElementById('qty-plus').addEventListener('click', () => {
+        if (s2.qty < 99) { s2.qty++; qtyInput.value = s2.qty; updateSummary(); }
+      });
+
+      // ── Shipping ──
+      document.querySelectorAll('.ship-option').forEach(opt => {
+        if (opt.dataset.ship === s2.ship) opt.classList.add('selected');
+        else opt.classList.remove('selected');
+
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.ship-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          s2.ship      = opt.dataset.ship;
+          s2.shipPrice = parseFloat(opt.dataset.shipPrice);
+          updateSummary();
+        });
+      });
+
+      // ── Update summary ──
+      function updateSummary() {
+        const sizeLabels = { A:'Size A — 30 × 18 cm', B:'Size B — 45 × 25 cm', C:'Size C — 60 × 35 cm' };
+        const shipLabels = { standard:'Standard Ground', express:'Express Shipping' };
+        const subtotal   = s2.sizePrice * s2.qty;
+        const total      = subtotal + s2.shipPrice;
+
+        document.getElementById('sum-size-label').textContent  = sizeLabels[s2.size];
+        document.getElementById('sum-size-price').textContent  = s2.sizePrice.toFixed(2);
+        document.getElementById('sum-qty-label').textContent   = `${s2.qty} sticker${s2.qty>1?'s':''}`;
+        document.getElementById('sum-qty').textContent         = s2.qty;
+        document.getElementById('sum-ship-label').textContent  = shipLabels[s2.ship];
+        document.getElementById('sum-ship-price').textContent  = s2.shipPrice === 0 ? 'FREE' : `$${s2.shipPrice.toFixed(2)}`;
+        document.getElementById('sum-subtotal').textContent    = subtotal.toFixed(2);
+        document.getElementById('sum-total').textContent       = total.toFixed(2);
+
+        document.getElementById('bulk-hint').classList.toggle('hidden', s2.qty < 4);
+        updateCta();
+      }
+
+      // ── Address fields ──
+      const addrFields = {
+        name:   { el: document.getElementById('a-name'),   errEl: document.getElementById('a-name-err'),   msg: 'Name is required.', validate: v => v.trim().length > 0 },
+        street: { el: document.getElementById('a-street'), errEl: document.getElementById('a-street-err'), msg: 'Street address is required.', validate: v => v.trim().length > 0 },
+        city:   { el: document.getElementById('a-city'),   errEl: document.getElementById('a-city-err'),   msg: 'City is required.', validate: v => v.trim().length > 0 },
+        state:  { el: document.getElementById('a-state'),  errEl: document.getElementById('a-state-err'),  msg: 'State is required.', validate: v => v.length > 0 },
+        zip:    { el: document.getElementById('a-zip'),    errEl: document.getElementById('a-zip-err'),    msg: 'Valid 5-digit ZIP required.', validate: v => /^\d{5}$/.test(v.trim()) },
+      };
+
+      // Restore saved address
+      if (s2.address) {
+        if (s2.address.name)    addrFields.name.el.value   = s2.address.name;
+        if (s2.address.street)  addrFields.street.el.value = s2.address.street;
+        if (s2.address.apt)     document.getElementById('a-apt').value = s2.address.apt;
+        if (s2.address.city)    addrFields.city.el.value   = s2.address.city;
+        if (s2.address.state)   addrFields.state.el.value  = s2.address.state;
+        if (s2.address.zip)     addrFields.zip.el.value    = s2.address.zip;
+        if (s2.address.country) document.getElementById('a-country').value = s2.address.country;
+      }
+
+      const blurred = {};
+      Object.entries(addrFields).forEach(([key, f]) => {
+        f.el.addEventListener('input', () => { if (blurred[key]) validateField(key); updateCta(); });
+        f.el.addEventListener('change', () => { if (blurred[key]) validateField(key); updateCta(); });
+        f.el.addEventListener('blur', () => { blurred[key] = true; validateField(key); updateCta(); });
+      });
+      document.getElementById('a-zip').addEventListener('input', e => {
+        e.target.value = e.target.value.replace(/\D/g,'');
+      });
+
+      function validateField(key) {
+        const f = addrFields[key];
+        const ok = f.validate(f.el.value);
+        f.el.classList.toggle('is-error', !ok);
+        f.el.classList.toggle('is-valid', ok);
+        f.errEl.classList.toggle('visible', !ok);
+        return ok;
+      }
+
+      function validateAll() {
+        return Object.keys(addrFields).every(k => addrFields[k].validate(addrFields[k].el.value));
+      }
+
+      function updateCta() {
+        document.getElementById('btn-continue').disabled = !validateAll();
+      }
+
+      // ── Continue ──
+      document.getElementById('btn-continue').addEventListener('click', () => {
+        Object.keys(addrFields).forEach(k => { blurred[k] = true; validateField(k); });
+        if (!validateAll()) {
+          const first = document.querySelector('.field-input.is-error');
+          if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+          return;
+        }
+        s2.address = {
+          name:    addrFields.name.el.value,
+          street:  addrFields.street.el.value,
+          apt:     document.getElementById('a-apt').value,
+          city:    addrFields.city.el.value,
+          state:   addrFields.state.el.value,
+          zip:     addrFields.zip.el.value,
+          country: document.getElementById('a-country').value,
+        };
+        localStorage.setItem('dot_order', JSON.stringify(s2));
+        window.location.href = 'step-3.html';
+      });
+
+      // ── Boot ──
+      updateSummary();
+      updateCta();
+    </script>
+  </body>
+</html>

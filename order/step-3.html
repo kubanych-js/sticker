@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Review Order — DOT Sticker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --ink:#0b0b0c; --paper:#f5f2ea; --signal:#ffcc00; --rust:#c2410c; --ok:#16a34a; --mute:#6b7280; }
+      html,body { background:var(--paper); color:var(--ink); font-family:"Archivo",sans-serif; }
+      .mono { font-family:"JetBrains Mono",monospace; }
+      .display { font-family:"Archivo",sans-serif; font-weight:900; letter-spacing:-0.02em; line-height:0.92; }
+
+      .btn-primary { background:var(--signal); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; }
+      .btn-primary:hover:not(:disabled) { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+      .btn-primary:disabled { opacity:0.38; cursor:not-allowed; }
+      .btn-ghost { background:transparent; color:var(--ink); border:2px solid var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; }
+      .btn-ghost:hover { background:var(--ink); color:var(--paper); }
+      .card { background:#fff; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+      .chip { border:1.5px solid var(--ink); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.72rem; }
+
+      .field-label { display:block; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--mute); margin-bottom:4px; }
+      .field-input { width:100%; border:2px solid var(--ink); background:#fff; font-family:"JetBrains Mono",monospace; font-size:0.875rem; padding:10px 14px; outline:none; transition:background 150ms cubic-bezier(.2,.7,.2,1), border-color 150ms; }
+      .field-input:focus { background:var(--signal); }
+      .field-input.is-error { border-color:var(--rust); }
+      .field-input.is-valid { border-color:var(--ok); }
+      .field-error { display:none; font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--rust); margin-top:4px; }
+      .field-error.visible { display:block; }
+
+      /* Progress */
+      .step-circle { width:28px; height:28px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font-family:"JetBrains Mono",monospace; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+      .step-active .step-circle { background:var(--signal); }
+      .step-done   .step-circle { background:var(--ink); color:var(--paper); }
+      .step-line { flex:1; height:2px; background:var(--ink); opacity:0.2; }
+      .step-done + .step-line { opacity:0.5; }
+
+      /* Card heading */
+      .card-heading { display:flex; align-items:center; gap:8px; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1.25rem; }
+
+      /* Sticker preview */
+      .sticker-box { background:#fff; border:2px solid var(--ink); padding:16px 20px; text-align:center; box-shadow:4px 4px 0 var(--ink); }
+
+      /* Door for review */
+      .review-door {
+        background-color:#c5c3be;
+        background-image: linear-gradient(180deg,rgba(255,255,255,0.14) 0%,rgba(0,0,0,0.05) 55%,rgba(0,0,0,0.2) 100%), repeating-linear-gradient(180deg,rgba(0,0,0,0.035) 0 1px,transparent 1px 16px);
+        border:2px solid var(--ink); box-shadow:inset 0 0 0 8px #b2b0ab, 6px 6px 0 var(--ink); position:relative;
+      }
+
+      /* Section divider */
+      .section-row { display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="border-b-2 border-black sticky top-0 bg-[var(--paper)] z-40">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+        <a href="../index.html" class="flex items-center gap-2 font-black tracking-tight shrink-0">
+          <span class="w-7 h-7 bg-[var(--signal)] border-2 border-black grid place-items-center mono text-xs">D</span>
+          <span class="hidden sm:block">DOT STICKER PRO</span>
+        </a>
+        <div class="w-px h-6 bg-black/20 shrink-0 hidden sm:block"></div>
+        <div class="flex items-center gap-2 flex-1 max-w-xs">
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">DESIGN</span>
+          </div>
+          <div class="step-line step-done"></div>
+          <div class="flex items-center gap-1.5 step-done">
+            <div class="step-circle">✓</div>
+            <span class="mono text-xs hidden sm:block">SHIP</span>
+          </div>
+          <div class="step-line step-done"></div>
+          <div class="flex items-center gap-1.5 step-active">
+            <div class="step-circle">03</div>
+            <span class="mono text-xs font-bold hidden sm:block">REVIEW</span>
+          </div>
+        </div>
+        <span class="ml-auto mono text-xs text-[var(--mute)] shrink-0 hidden md:block">Step 3 of 3</span>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+
+        <!-- ── LEFT: Order summary (8/12) ── -->
+        <div class="lg:col-span-8 space-y-4">
+          <div>
+            <h1 class="display text-4xl md:text-5xl">Review your<br>order.</h1>
+            <p class="mono text-xs text-[var(--mute)] mt-2 uppercase">Everything looks right? Place your order below.</p>
+          </div>
+
+          <!-- Design card -->
+          <div class="card p-6">
+            <div class="card-heading">
+              Design
+              <a href="step-1.html" class="ml-auto mono text-[10px] underline text-[var(--mute)]">Edit</a>
+            </div>
+            <div class="flex gap-5 items-start">
+              <!-- Mini door preview -->
+              <div class="review-door shrink-0 flex items-center justify-center rounded-sm overflow-hidden"
+                   style="width:110px; height:145px">
+                <div class="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-8 bg-neutral-600 border border-black rounded-sm" style="position:relative; margin-right:-8px"></div>
+                <div id="r-sticker" class="bg-white border border-black p-2 text-center mx-2 w-full"
+                     style="box-shadow:2px 2px 0 #000">
+                  <div id="r-company" class="font-black text-[9px] leading-tight">YOUR COMPANY</div>
+                  <div class="h-px w-5 mx-auto my-1 bg-[var(--rust)]"></div>
+                  <div class="mono text-[7px]">USDOT <span id="r-usdot" class="font-bold">———</span></div>
+                  <div class="mono text-[7px]">MC <span id="r-mc" class="font-bold">———</span></div>
+                </div>
+                <img id="r-upload-img" src="" alt="Uploaded sticker"
+                     style="display:none; width:86px; height:auto; max-height:116px; object-fit:contain; border:1.5px solid #000; box-shadow:2px 2px 0 #000;" />
+              </div>
+              <!-- Details -->
+              <div class="space-y-1.5">
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Template</div>
+                  <div id="r-template" class="font-bold">Classic</div>
+                </div>
+                <div>
+                  <div class="mono text-[10px] text-[var(--mute)] uppercase">Company</div>
+                  <div id="r-name" class="font-bold">YOUR COMPANY</div>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4">
+                  <div>
+                    <div class="mono text-[10px] text-[var(--mute)] uppercase">USDOT</div>
+                    <div id="r-usdot2" class="font-bold mono">———</div>
+                  </div>
+                  <div>
+                    <div class="mono text-[10px] text-[var(--mute)] uppercase">MC</div>
+                    <div id="r-mc2" class="font-bold mono">———</div>
+                  </div>
+                </div>
+                <div class="chip mono inline-block bg-[var(--ok)] text-white border-[var(--ok)] mt-1" style="font-size:0.68rem">✓ FMCSA validated</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipping card -->
+          <div class="card p-6">
+            <div class="card-heading">
+              Size &amp; Shipping
+              <a href="step-2.html" class="ml-auto mono text-[10px] underline text-[var(--mute)]">Edit</a>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <div class="mono text-[10px] text-[var(--mute)] uppercase mb-1">Sticker size</div>
+                <div id="r-size" class="font-bold">Size B — 45 × 25 cm</div>
+                <div id="r-size-sub" class="mono text-xs text-[var(--mute)] mt-0.5">2.5" letters · Box trucks, day cabs</div>
+              </div>
+              <div>
+                <div class="mono text-[10px] text-[var(--mute)] uppercase mb-1">Quantity</div>
+                <div><span id="r-qty" class="font-bold">2</span> <span class="font-bold">stickers</span></div>
+                <div class="mono text-xs text-[var(--mute)] mt-0.5">Both driver &amp; passenger sides covered</div>
+              </div>
+              <div>
+                <div class="mono text-[10px] text-[var(--mute)] uppercase mb-1">Shipping method</div>
+                <div id="r-ship" class="font-bold">Standard Ground</div>
+                <div id="r-ship-eta" class="mono text-xs text-[var(--mute)] mt-0.5">2–3 business days</div>
+              </div>
+              <div>
+                <div class="mono text-[10px] text-[var(--mute)] uppercase mb-1">Deliver to</div>
+                <div id="r-addr-name" class="font-bold">—</div>
+                <div id="r-addr-line" class="mono text-xs text-[var(--mute)] mt-0.5">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price breakdown -->
+          <div class="card p-6">
+            <div class="card-heading">Price Breakdown</div>
+            <div class="space-y-2.5">
+              <div class="section-row">
+                <span class="mono text-sm" id="r-line-stickers">2× Size B stickers</span>
+                <span class="mono font-bold">$<span id="r-subtotal">17.98</span></span>
+              </div>
+              <div class="section-row">
+                <span class="mono text-sm" id="r-line-ship">Standard shipping</span>
+                <span class="mono font-bold" id="r-ship-price">FREE</span>
+              </div>
+              <div class="section-row">
+                <span class="mono text-sm text-[var(--ok)]">PDF download</span>
+                <span class="mono font-bold text-[var(--ok)]">FREE</span>
+              </div>
+              <div class="border-t-2 border-black pt-3 mt-1">
+                <div class="section-row">
+                  <span class="font-black text-xl">Total</span>
+                  <span class="display text-3xl">$<span id="r-total">17.98</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 mono text-[10px] text-[var(--mute)]">
+              Prices in USD. Taxes may apply depending on your state.
+            </div>
+          </div>
+
+          <!-- Edit links row (mobile) -->
+          <div class="flex gap-3 flex-wrap lg:hidden">
+            <a href="step-1.html" class="btn-ghost px-4 py-2 mono text-xs font-bold">← Edit design</a>
+            <a href="step-2.html" class="btn-ghost px-4 py-2 mono text-xs font-bold">← Edit shipping</a>
+          </div>
+        </div>
+
+        <!-- ── RIGHT: Place order (4/12) sticky ── -->
+        <div class="lg:col-span-4 lg:sticky lg:top-24 space-y-4">
+
+          <!-- Contact + place order -->
+          <div class="card p-6">
+            <div class="card-heading">Place Order</div>
+
+            <div class="mb-5">
+              <label class="field-label" for="f-email">Email for PDF delivery *</label>
+              <input id="f-email" type="email" placeholder="you@example.com" class="field-input" autocomplete="email" />
+              <div id="email-err" class="field-error">Please enter a valid email.</div>
+              <p class="mono text-[10px] text-[var(--mute)] mt-1.5">Your PDF will be emailed instantly after payment.</p>
+            </div>
+
+            <!-- Total recap -->
+            <div class="border-2 border-black px-4 py-3 mb-5 flex justify-between items-center">
+              <span class="mono text-sm">Total</span>
+              <span class="display text-2xl">$<span id="r-total-cta">17.98</span></span>
+            </div>
+
+            <button id="btn-order" class="btn-primary w-full py-4 mono font-bold text-base" disabled>
+              PLACE ORDER →
+            </button>
+            <p class="mono text-[10px] text-[var(--mute)] text-center mt-3">
+              Not charged yet · Secure payment on next screen
+            </p>
+          </div>
+
+          <!-- Trust signals -->
+          <div class="card p-5 bg-[var(--ink)] text-[var(--paper)]">
+            <div class="mono text-[10px] text-[var(--signal)] uppercase tracking-widest mb-3">Why trust us</div>
+            <ul class="space-y-2 mono text-xs">
+              <li class="flex gap-2"><span class="text-[var(--ok)]">✓</span> FMCSA 49 CFR § 390.21 validated</li>
+              <li class="flex gap-2"><span class="text-[var(--ok)]">✓</span> 5-year outdoor vinyl, UV resistant</li>
+              <li class="flex gap-2"><span class="text-[var(--ok)]">✓</span> Free PDF — emailed in seconds</li>
+              <li class="flex gap-2"><span class="text-[var(--ok)]">✓</span> 1,247 stickers shipped this month</li>
+              <li class="flex gap-2"><span class="text-[var(--ok)]">✓</span> 4.9/5 stars · 120+ reviews</li>
+            </ul>
+          </div>
+
+          <!-- Refund note -->
+          <div class="border-2 border-black p-4">
+            <div class="mono text-[10px] text-[var(--mute)] uppercase tracking-widest mb-1">Refund policy</div>
+            <p class="mono text-xs">If your sticker arrives damaged or with the wrong information, we reprint and reship at no charge.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+
+    <script>
+      // ── Load state ──
+      let step1 = {}, step2 = {};
+      try { step1 = JSON.parse(localStorage.getItem('dot_builder') || '{}'); } catch(e) {}
+      try { step2 = JSON.parse(localStorage.getItem('dot_order')   || '{}'); } catch(e) {}
+
+      const TPL_NAMES  = { classic:'Classic', fleet:'Fleet', heavy:'Heavy-Duty', custom:'Custom' };
+      const SIZE_NAMES = { A:'Size A — 30 × 18 cm', B:'Size B — 45 × 25 cm', C:'Size C — 60 × 35 cm' };
+      const SIZE_SUBS  = { A:'2.0" letters · Compact pickups, vans', B:'2.5" letters · Box trucks, day cabs', C:'3.5" letters · Sleepers, heavy haul' };
+      const SHIP_NAMES = { standard:'Standard Ground', express:'Express Shipping' };
+      const SHIP_ETAS  = { standard:'2–3 business days', express:'1 business day' };
+
+      // Design
+      const name     = (step1.name  || 'YOUR COMPANY').toUpperCase();
+      const usdot    = step1.usdot  || '———';
+      const mc       = step1.noMc   ? 'N/A' : (step1.mc || '———');
+      const template = step1.template || 'classic';
+
+      // Mini sticker on door
+      document.getElementById('r-company').textContent = name;
+      document.getElementById('r-usdot').textContent   = usdot;
+      document.getElementById('r-mc').textContent      = mc;
+
+      // Design details
+      document.getElementById('r-template').textContent = TPL_NAMES[template] || 'Classic';
+      document.getElementById('r-name').textContent     = name;
+      document.getElementById('r-usdot2').textContent   = usdot;
+      document.getElementById('r-mc2').textContent      = mc;
+
+      // Apply template style to mini sticker
+      const rSticker = document.getElementById('r-sticker');
+      const rComp    = document.getElementById('r-company');
+      const TPL_STYLE = {
+        classic: { bg:'#fff', color:'var(--ink)', border:'solid' },
+        fleet:   { bg:'var(--paper)', color:'var(--ink)', border:'solid' },
+        heavy:   { bg:'var(--signal)', color:'var(--ink)', border:'solid' },
+        custom:  { bg:'#fff', color:'var(--rust)', border:'dashed' },
+      };
+      const ts = TPL_STYLE[template] || TPL_STYLE.classic;
+      rSticker.style.background  = ts.bg;
+      rSticker.style.color       = ts.color;
+      rSticker.style.borderStyle = ts.border;
+
+      // Upload mode: swap text sticker for uploaded image on door
+      const uploadUrl = step1.uploadUrl || (() => { try { return sessionStorage.getItem('dot_upload_img') || ''; } catch(e) { return ''; } })();
+      if (step1.mode === 'upload' && uploadUrl) {
+        rSticker.style.display = 'none';
+        const rUploadImg = document.getElementById('r-upload-img');
+        rUploadImg.src           = uploadUrl;
+        rUploadImg.style.display = 'block';
+        document.getElementById('r-template').textContent = 'Uploaded design';
+      }
+
+      // Size & Shipping
+      const size      = step2.size      || 'B';
+      const sizePrice = step2.sizePrice || 8.99;
+      const qty       = step2.qty       || 2;
+      const ship      = step2.ship      || 'standard';
+      const shipPrice = step2.shipPrice || 0;
+      const addr      = step2.address   || {};
+
+      document.getElementById('r-size').textContent      = SIZE_NAMES[size] || SIZE_NAMES.B;
+      document.getElementById('r-size-sub').textContent  = SIZE_SUBS[size]  || SIZE_SUBS.B;
+      document.getElementById('r-qty').textContent       = qty;
+      document.getElementById('r-ship').textContent      = SHIP_NAMES[ship] || SHIP_NAMES.standard;
+      document.getElementById('r-ship-eta').textContent  = SHIP_ETAS[ship]  || SHIP_ETAS.standard;
+      document.getElementById('r-addr-name').textContent = addr.name  || '—';
+
+      const addrLine = [addr.street, addr.apt, addr.city, addr.state, addr.zip].filter(Boolean).join(', ');
+      document.getElementById('r-addr-line').textContent = addrLine || '—';
+
+      // Price
+      const subtotal = sizePrice * qty;
+      const total    = subtotal + shipPrice;
+      document.getElementById('r-line-stickers').textContent = `${qty}× ${SIZE_NAMES[size] || 'Size B'} sticker${qty>1?'s':''}`;
+      document.getElementById('r-subtotal').textContent      = subtotal.toFixed(2);
+      document.getElementById('r-line-ship').textContent     = SHIP_NAMES[ship] || 'Standard shipping';
+      document.getElementById('r-ship-price').textContent    = shipPrice === 0 ? 'FREE' : `$${shipPrice.toFixed(2)}`;
+      document.getElementById('r-total').textContent         = total.toFixed(2);
+      document.getElementById('r-total-cta').textContent     = total.toFixed(2);
+
+      // ── Email validation ──
+      const fEmail  = document.getElementById('f-email');
+      const emailErr= document.getElementById('email-err');
+      const btnOrder= document.getElementById('btn-order');
+      let emailBlurred = false;
+
+      function validateEmail() {
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fEmail.value.trim());
+        if (emailBlurred) {
+          fEmail.classList.toggle('is-error', !ok);
+          fEmail.classList.toggle('is-valid',  ok);
+          emailErr.classList.toggle('visible', !ok);
+        }
+        return ok;
+      }
+
+      fEmail.addEventListener('input',  () => { if (emailBlurred) validateEmail(); btnOrder.disabled = !validateEmail(); });
+      fEmail.addEventListener('blur',   () => { emailBlurred = true; validateEmail(); btnOrder.disabled = !validateEmail(); });
+      fEmail.addEventListener('keydown', e => { if (e.key === 'Enter') { emailBlurred = true; if (validateEmail()) placeOrder(); } });
+
+      // ── Place order ──
+      function placeOrder() {
+        emailBlurred = true;
+        if (!validateEmail()) {
+          fEmail.scrollIntoView({ behavior:'smooth', block:'center' }); return;
+        }
+        const orderNum = 'DSP-' + Math.random().toString(36).slice(2,7).toUpperCase();
+
+        // Persist confirmation data for success page
+        try {
+          sessionStorage.setItem('dot_success', JSON.stringify({
+            orderNum,
+            email:    fEmail.value.trim(),
+            ship,
+            shipEta:  ({ standard:'2–3 business days', express:'1 business day' })[ship] || '2–3 business days',
+            total:    total.toFixed(2),
+            name,
+            usdot,
+            mc,
+            size,
+            qty,
+            mode:     step1.mode || 'design',
+            uploadUrl: uploadUrl || null,
+          }));
+        } catch(e) {}
+
+        // Clear order localStorage
+        localStorage.removeItem('dot_builder');
+        localStorage.removeItem('dot_order');
+
+        window.location.href = 'success.html';
+      }
+
+      btnOrder.addEventListener('click', placeOrder);
+    </script>
+  </body>
+</html>

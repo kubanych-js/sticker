@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Design Your Sticker — DOT Sticker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --ink:#0b0b0c; --paper:#f5f2ea; --signal:#ffcc00; --rust:#c2410c; --ok:#16a34a; --mute:#6b7280; }
+      html,body { background:var(--paper); color:var(--ink); font-family:"Archivo",sans-serif; }
+      .mono { font-family:"JetBrains Mono",monospace; }
+      .display { font-family:"Archivo",sans-serif; font-weight:900; letter-spacing:-0.02em; line-height:0.92; }
+
+      /* ── Base components ── */
+      .btn-primary { background:var(--signal); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; }
+      .btn-primary:hover:not(:disabled) { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+      .btn-primary:disabled { opacity:0.38; cursor:not-allowed; }
+      .btn-ghost { background:transparent; color:var(--ink); border:2px solid var(--ink); transition:all 150ms cubic-bezier(.2,.7,.2,1); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; }
+      .btn-ghost:hover { background:var(--ink); color:var(--paper); }
+      .card { background:#fff; border:2px solid var(--ink); box-shadow:6px 6px 0 var(--ink); }
+      .chip { border:1.5px solid var(--ink); padding:0.25rem 0.65rem; border-radius:999px; font-size:0.72rem; }
+
+      /* ── Form ── */
+      .field-label { display:block; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--mute); margin-bottom:4px; }
+      .field-input { width:100%; border:2px solid var(--ink); background:#fff; font-family:"JetBrains Mono",monospace; font-size:0.875rem; padding:10px 14px; outline:none; transition:background 150ms cubic-bezier(.2,.7,.2,1), border-color 150ms; }
+      .field-input:focus { background:var(--signal); }
+      .field-input.is-error { border-color:var(--rust); }
+      .field-input.is-valid  { border-color:var(--ok); }
+      .field-input:disabled  { opacity:0.4; cursor:not-allowed; background:#f5f5f5; }
+      .field-error { display:none; font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--rust); margin-top:4px; }
+      .field-error.visible { display:block; }
+      .char-count { font-family:"JetBrains Mono",monospace; font-size:0.68rem; color:var(--mute); }
+      .char-count.warn { color:var(--ink); background:var(--signal); padding:0 4px; border-radius:2px; }
+
+      /* ── Progress ── */
+      .step-circle { width:28px; height:28px; border-radius:50%; border:2px solid var(--ink); display:grid; place-items:center; font-family:"JetBrains Mono",monospace; font-size:0.65rem; font-weight:700; flex-shrink:0; transition:all 150ms; }
+      .step-active .step-circle { background:var(--signal); }
+      .step-done   .step-circle { background:var(--ink); color:var(--paper); }
+      .step-line { flex:1; height:2px; background:var(--ink); opacity:0.2; }
+
+      /* ── Card heading ── */
+      .card-heading { display:flex; align-items:center; gap:8px; font-family:"JetBrains Mono",monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1.25rem; }
+      .card-heading .num { width:20px; height:20px; border:2px solid var(--ink); display:grid; place-items:center; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+
+      /* ── Mode toggle ── */
+      .mode-tab { display:flex; border:2px solid var(--ink); overflow:hidden; }
+      .mode-tab button { flex:1; padding:11px 8px; font-family:"JetBrains Mono",monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; background:#fff; border:none; cursor:pointer; transition:all 150ms cubic-bezier(.2,.7,.2,1); display:flex; align-items:center; justify-content:center; gap:6px; }
+      .mode-tab button:first-child { border-right:2px solid var(--ink); }
+      .mode-tab button.active { background:var(--signal); }
+
+      /* ── Template cards ── */
+      .tpl-card { border:2px solid var(--ink); background:white; cursor:pointer; position:relative; overflow:hidden; transition:transform 150ms cubic-bezier(.2,.7,.2,1), box-shadow 150ms; }
+      .tpl-card:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink); }
+      .tpl-card.selected { border-color:var(--signal); box-shadow:5px 5px 0 var(--ink); }
+      .check-badge { display:none; position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:var(--signal); border:2px solid var(--ink); font-size:11px; font-weight:900; place-items:center; }
+      .tpl-card.selected .check-badge { display:grid; }
+
+      /* ── Color swatches ── */
+      .swatch { width:34px; height:34px; border:2px solid var(--ink); border-radius:3px; cursor:pointer; transition:box-shadow 150ms; }
+      .swatch.selected { box-shadow:0 0 0 3px var(--signal), 0 0 0 5px var(--ink); }
+
+      /* ── Drop zone ── */
+      .drop-zone { border:2px dashed var(--ink); cursor:pointer; transition:background 150ms cubic-bezier(.2,.7,.2,1), border-style 80ms; position:relative; }
+      .drop-zone:hover  { background:var(--paper); }
+      .drop-zone.drag-over { background:var(--signal); border-style:solid; }
+      .drop-zone.has-file  { border-style:solid; }
+      .dz-icon { font-size:2.5rem; line-height:1; display:block; margin-bottom:0.5rem; transition:transform 200ms cubic-bezier(.2,.7,.2,1); }
+      .drop-zone:hover .dz-icon, .drop-zone.drag-over .dz-icon { transform:translateY(-4px); }
+
+      /* ── Truck door ── */
+      .truck-door {
+        background-color:#c5c3be;
+        background-image: linear-gradient(180deg,rgba(255,255,255,0.16) 0%,rgba(0,0,0,0.05) 55%,rgba(0,0,0,0.2) 100%), repeating-linear-gradient(180deg,rgba(0,0,0,0.035) 0 1px,transparent 1px 16px);
+        border:2px solid var(--ink); box-shadow:inset 0 0 0 10px #b2b0ab, 8px 8px 0 var(--ink); position:relative;
+      }
+      .door-handle { position:absolute; right:18px; top:50%; transform:translateY(-50%); width:26px; height:68px; background:#484848; border:2px solid var(--ink); border-radius:4px; box-shadow:inset -2px 0 4px rgba(0,0,0,0.3); }
+      .door-sticker { background:white; border:2px solid var(--ink); padding:20px 24px; text-align:center; box-shadow:4px 4px 0 var(--ink); width:100%; max-width:300px; transition:background 80ms ease, color 80ms ease, border-style 80ms ease; }
+      .door-sticker.flash { background:var(--signal) !important; }
+      .door-fmcsa-badge { opacity:0; transition:opacity 200ms; pointer-events:none; }
+      .truck-door:hover .door-fmcsa-badge { opacity:1; }
+
+      /* ── Side toggle ── */
+      .side-toggle { display:flex; border:2px solid var(--ink); overflow:hidden; }
+      .side-toggle button { flex:1; padding:8px 16px; font-family:"JetBrains Mono",monospace; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; background:white; border:none; cursor:pointer; transition:all 150ms; }
+      .side-toggle button.active { background:var(--ink); color:var(--paper); }
+
+      /* ── Tooltip ── */
+      .has-tooltip { position:relative; }
+      .has-tooltip .tooltip { display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:var(--ink); color:var(--paper); font-family:"JetBrains Mono",monospace; font-size:0.68rem; padding:6px 10px; white-space:nowrap; pointer-events:none; z-index:10; }
+      .has-tooltip:hover .tooltip { display:block; }
+
+      /* ── Mobile preview ── */
+      .mob-mini-sticker { transition:background 80ms ease; }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="border-b-2 border-black sticky top-0 bg-[var(--paper)] z-40">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
+        <a href="../index.html" class="flex items-center gap-2 font-black tracking-tight shrink-0">
+          <span class="w-7 h-7 bg-[var(--signal)] border-2 border-black grid place-items-center mono text-xs">D</span>
+          <span class="hidden sm:block">DOT STICKER PRO</span>
+        </a>
+        <div class="w-px h-6 bg-black/20 shrink-0 hidden sm:block"></div>
+        <div class="flex items-center gap-2 flex-1 max-w-xs">
+          <div class="flex items-center gap-1.5 step-active">
+            <div class="step-circle">01</div>
+            <span class="mono text-xs font-bold hidden sm:block">DESIGN</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="flex items-center gap-1.5">
+            <div class="step-circle">02</div>
+            <span class="mono text-xs text-[var(--mute)] hidden sm:block">SHIP</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="flex items-center gap-1.5">
+            <div class="step-circle">03</div>
+            <span class="mono text-xs text-[var(--mute)] hidden sm:block">REVIEW</span>
+          </div>
+        </div>
+        <span class="ml-auto mono text-xs text-[var(--mute)] shrink-0 hidden md:block">Step 1 of 3</span>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10" style="padding-bottom:calc(5.5rem + env(safe-area-inset-bottom,0px))">
+      <div class="grid lg:grid-cols-12 gap-10 items-start">
+
+        <!-- ══════════════════════════════
+             LEFT COLUMN (5/12)
+        ══════════════════════════════ -->
+        <div class="lg:col-span-5 space-y-5">
+
+          <div>
+            <h1 class="display text-4xl md:text-5xl">Design your<br>sticker.</h1>
+            <p class="mono text-xs text-[var(--mute)] mt-2 uppercase">Fields marked * are required</p>
+          </div>
+
+          <!-- ── Mode toggle ── -->
+          <div class="mode-tab" role="tablist">
+            <button id="mode-design" class="active" role="tab" aria-selected="true">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 13l2-2 8-8L9 1 1 9v2h2"/></svg>
+              Design from scratch
+            </button>
+            <button id="mode-upload" role="tab" aria-selected="false">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1v8M4 4l3-3 3 3M2 11h10v2H2z"/></svg>
+              Upload my design
+            </button>
+          </div>
+
+          <!-- ── Company info (both modes) ── -->
+          <div class="card p-6">
+            <div class="card-heading"><span class="num">1</span> Company Info</div>
+
+            <div class="mb-4">
+              <div class="flex items-center justify-between">
+                <label class="field-label" for="f-name">Legal company name *</label>
+                <span id="name-count" class="char-count">0/60</span>
+              </div>
+              <input id="f-name" type="text" maxlength="60" placeholder="REDLINE TRANSPORT LLC" class="field-input" autocomplete="organization" />
+              <div id="name-err" class="field-error">Company name is required.</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4" id="usdot-mc-row">
+              <div>
+                <div class="flex items-center justify-between">
+                  <label class="field-label" for="f-usdot">USDOT # *</label>
+                  <span id="usdot-count" class="char-count">0/8</span>
+                </div>
+                <input id="f-usdot" type="text" maxlength="8" placeholder="3214567" class="field-input" inputmode="numeric" />
+                <div id="usdot-err" class="field-error">Must be 5–8 digits.</div>
+              </div>
+              <div id="mc-wrap">
+                <label class="field-label" for="f-mc">MC #</label>
+                <input id="f-mc" type="text" maxlength="8" placeholder="654321" class="field-input" inputmode="numeric" />
+              </div>
+            </div>
+
+            <label id="no-mc-label" class="flex items-center gap-2 cursor-pointer select-none mt-3" style="font-size:0.82rem">
+              <input id="no-mc" type="checkbox" class="w-4 h-4 border-2 border-black accent-[var(--signal)]" />
+              I don't have an MC number
+            </label>
+
+            <div id="tagline-wrap" class="hidden mt-3">
+              <label class="field-label" for="f-tagline">Tagline <span style="font-size:0.62rem;opacity:0.7">(optional · max 32 chars)</span></label>
+              <input id="f-tagline" type="text" maxlength="32" placeholder="Moving America Forward" class="field-input" />
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════
+               DESIGN MODE panels
+          ═══════════════════════════════ -->
+          <div id="design-panels" class="space-y-5">
+
+            <!-- Template -->
+            <div class="card p-6">
+              <div class="card-heading"><span class="num">2</span> Template</div>
+              <div class="grid grid-cols-2 gap-3">
+
+                <div class="tpl-card selected" data-tpl="classic" tabindex="0" role="radio" aria-checked="true">
+                  <div class="check-badge">✓</div>
+                  <div class="p-3">
+                    <div class="border border-black bg-white p-2 text-center mb-2.5">
+                      <div class="font-black text-[10px] leading-tight truncate" id="mc-name">YOUR COMPANY</div>
+                      <div class="h-px w-8 mx-auto my-1 bg-[var(--rust)]"></div>
+                      <div class="mono text-[8px]">USDOT <span class="font-bold" id="mc-usdot">———</span></div>
+                      <div class="mono text-[8px]">MC <span class="font-bold" id="mc-mc">———</span></div>
+                    </div>
+                    <div class="display text-sm">Classic</div>
+                    <div class="mono text-[9px] text-[var(--mute)] mt-0.5">BEST FOR: owner-ops</div>
+                  </div>
+                </div>
+
+                <div class="tpl-card" data-tpl="fleet" tabindex="0" role="radio" aria-checked="false">
+                  <div class="check-badge">✓</div>
+                  <div class="p-3">
+                    <div class="border border-black bg-[var(--paper)] p-2 text-center mb-2.5">
+                      <div class="flex items-center justify-center gap-1 mb-1">
+                        <span class="w-2 h-2 bg-[var(--rust)] shrink-0"></span>
+                        <span class="font-black text-[9px] truncate" id="mf-name">YOUR COMPANY</span>
+                      </div>
+                      <div class="border-t border-black/30 my-1"></div>
+                      <div class="mono text-[8px]"><span class="font-bold" id="mf-usdot">———</span> · MC <span class="font-bold" id="mf-mc">———</span></div>
+                    </div>
+                    <div class="display text-sm">Fleet</div>
+                    <div class="mono text-[9px] text-[var(--mute)] mt-0.5">BEST FOR: fleets</div>
+                  </div>
+                </div>
+
+                <div class="tpl-card" data-tpl="heavy" tabindex="0" role="radio" aria-checked="false">
+                  <div class="check-badge">✓</div>
+                  <div class="p-3">
+                    <div class="border border-black bg-[var(--signal)] p-2 text-center mb-2.5">
+                      <div class="font-black text-[9px] truncate" id="mh-name">YOUR COMPANY</div>
+                      <div class="mono text-[7px] opacity-60 mt-0.5">USDOT</div>
+                      <div class="display text-lg leading-none" id="mh-usdot">———</div>
+                    </div>
+                    <div class="display text-sm">Heavy-Duty</div>
+                    <div class="mono text-[9px] text-[var(--mute)] mt-0.5">BEST FOR: heavy haul</div>
+                  </div>
+                </div>
+
+                <div class="tpl-card" data-tpl="custom" tabindex="0" role="radio" aria-checked="false">
+                  <div class="check-badge">✓</div>
+                  <div class="p-3">
+                    <div class="border border-dashed border-black p-2 text-center mb-2.5 min-h-[68px] grid place-items-center">
+                      <div class="mono text-[8px] text-[var(--rust)] uppercase leading-loose">
+                        Your fonts<br>Your colors<br>Your layout
+                      </div>
+                    </div>
+                    <div class="display text-sm">Custom</div>
+                    <div class="mono text-[9px] text-[var(--mute)] mt-0.5">BEST FOR: brand +$14.99</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Color (Custom only) -->
+            <div id="color-card" class="card p-6 hidden">
+              <div class="card-heading"><span class="num">3</span> Color Scheme</div>
+              <div class="flex items-end gap-4 flex-wrap">
+                <div class="flex flex-col items-center gap-1.5">
+                  <div class="swatch selected" data-color="bw" style="background:linear-gradient(135deg,#111 50%,#fff 50%)"></div>
+                  <span class="mono text-[9px] text-[var(--mute)]">B/W</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5">
+                  <div class="swatch" data-color="rw" style="background:linear-gradient(135deg,var(--rust) 50%,#fff 50%)"></div>
+                  <span class="mono text-[9px] text-[var(--mute)]">R/W</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5">
+                  <div class="swatch" data-color="blw" style="background:linear-gradient(135deg,#1d4ed8 50%,#fff 50%)"></div>
+                  <span class="mono text-[9px] text-[var(--mute)]">BL/W</span>
+                </div>
+                <div class="flex flex-col items-center gap-1.5">
+                  <input id="hex-color" type="text" maxlength="7" placeholder="#FF6600" class="field-input w-24 text-center text-xs" style="padding:7px 8px" />
+                  <span class="mono text-[9px] text-[var(--mute)]">Custom HEX</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════
+               UPLOAD MODE panel
+          ═══════════════════════════════ -->
+          <div id="upload-panel" class="hidden space-y-5">
+            <div class="card p-6">
+              <div class="card-heading">
+                <span class="num" style="font-size:0.8rem">↑</span>
+                Upload Your Sticker File
+              </div>
+
+              <!-- Drop zone -->
+              <div id="drop-zone" class="drop-zone p-8 text-center rounded-sm" role="button" tabindex="0"
+                   aria-label="Upload sticker file — click or drag and drop">
+                <!-- Idle state -->
+                <div id="dz-idle">
+                  <span class="dz-icon">↑</span>
+                  <div class="font-bold text-base">Drop your file here</div>
+                  <div class="mono text-xs text-[var(--mute)] mt-1.5">PNG · JPG · SVG · up to 10 MB</div>
+                  <button type="button" id="dz-browse-btn"
+                    class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 mono text-xs font-bold mt-5">
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 10v2h12v-2M7 1v8M4 4l3-3 3 3"/></svg>
+                    BROWSE FILES
+                  </button>
+                </div>
+
+                <!-- Uploaded state -->
+                <div id="dz-preview" class="hidden">
+                  <img id="preview-thumb" src="" alt="Sticker preview"
+                    class="max-h-44 mx-auto object-contain border-2 border-black mb-3"
+                    style="box-shadow:3px 3px 0 var(--ink)" />
+                  <div class="mono text-sm font-bold truncate" id="preview-name">file.png</div>
+                  <div class="mono text-xs text-[var(--mute)] mt-0.5" id="preview-size">—</div>
+                  <button type="button" id="remove-upload"
+                    class="btn-ghost inline-flex items-center gap-1.5 px-3 py-1.5 mono text-xs font-bold mt-3">
+                    ✕ REMOVE &amp; CHOOSE ANOTHER
+                  </button>
+                </div>
+
+                <!-- Hidden real input -->
+                <input type="file" id="file-input" class="sr-only" accept=".png,.jpg,.jpeg,.svg,image/png,image/jpeg,image/svg+xml" />
+              </div>
+
+              <!-- Error message -->
+              <div id="dz-error" class="mono text-xs text-[var(--rust)] mt-2 hidden"></div>
+
+              <!-- Upload tips -->
+              <div id="dz-tips" class="mt-4 space-y-1.5">
+                <div class="mono text-[10px] text-[var(--mute)] flex items-start gap-2">
+                  <span class="shrink-0">→</span>
+                  <span>Use a high-resolution file (300 dpi+) for sharp printed results.</span>
+                </div>
+                <div class="mono text-[10px] text-[var(--mute)] flex items-start gap-2">
+                  <span class="shrink-0">→</span>
+                  <span>SVG files scale perfectly to any size. PNG/JPG work great too.</span>
+                </div>
+                <div class="mono text-[10px] text-[var(--mute)] flex items-start gap-2">
+                  <span class="shrink-0">→</span>
+                  <span>USDOT and company name must be legible — we validate for FMCSA.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Buttons (both modes) ── -->
+          <div class="flex gap-3 pt-1">
+            <a href="../index.html" class="btn-ghost px-5 py-3 mono text-sm font-bold">← BACK</a>
+            <div class="has-tooltip flex-1">
+              <button id="btn-continue" class="btn-primary w-full px-5 py-3 mono font-bold text-sm" disabled>
+                CONTINUE TO SIZE &amp; SHIPPING →
+              </button>
+              <div class="tooltip" id="cta-tip">Fill required fields to continue</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════
+             RIGHT COLUMN (7/12) — door
+        ══════════════════════════════ -->
+        <div class="hidden lg:block lg:col-span-7 lg:sticky lg:top-24">
+          <div class="truck-door rounded-sm flex items-center justify-center relative overflow-hidden"
+               style="height:calc(100vh - 180px); max-height:640px; min-height:440px">
+
+            <!-- Window -->
+            <div class="absolute top-8 left-8 right-20 h-[17%] border border-black/10 rounded-sm"
+                 style="background:linear-gradient(160deg,rgba(200,215,245,0.28),rgba(170,195,240,0.1))"></div>
+
+            <!-- Handle -->
+            <div class="door-handle"></div>
+
+            <!-- FMCSA hover badge -->
+            <div class="door-fmcsa-badge absolute top-[27%] left-1/2 -translate-x-1/2 z-10">
+              <span class="chip mono bg-[var(--signal)] text-[11px]">2.5" letters · FMCSA OK</span>
+            </div>
+
+            <!-- TEXT sticker (design mode) -->
+            <div id="door-sticker" class="door-sticker" style="margin-top:8%">
+              <div id="s-company" class="font-black tracking-tight leading-tight" style="font-size:1.35rem">YOUR COMPANY</div>
+              <div class="h-[3px] w-16 mx-auto my-2.5 bg-[var(--rust)]"></div>
+              <div class="mono text-sm">USDOT <span id="s-usdot" class="font-bold">———</span></div>
+              <div class="mono text-sm mt-0.5">MC <span id="s-mc" class="font-bold">———</span></div>
+            </div>
+
+            <!-- IMAGE sticker (upload mode) -->
+            <img id="door-upload-img" src="" alt="Custom sticker design"
+              class="hidden object-contain border-2 border-black"
+              style="max-width:78%; max-height:54%; margin-top:8%; box-shadow:4px 4px 0 var(--ink)" />
+
+            <!-- Upload prompt (upload mode, no file yet) -->
+            <div id="door-upload-prompt" class="hidden flex-col items-center justify-center text-center"
+                 style="margin-top:8%; max-width:78%">
+              <div class="border-2 border-dashed border-black/30 p-8 w-full">
+                <div class="mono text-sm text-[var(--mute)]">Your sticker preview<br>will appear here</div>
+                <div class="mono text-xs text-[var(--mute)] mt-2 opacity-60">↑ Upload a file to see it on the door</div>
+              </div>
+            </div>
+
+            <!-- Badges -->
+            <span class="absolute -top-3 left-5 chip mono bg-[var(--paper)] text-[11px]" id="side-badge">DRIVER SIDE · 2.5" letters</span>
+            <span class="absolute -bottom-3 right-5 chip mono bg-[var(--signal)] text-[11px]">LIVE PREVIEW</span>
+          </div>
+
+          <!-- Controls -->
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <div class="side-toggle">
+              <button id="btn-driver" class="active">Driver side</button>
+              <button id="btn-passenger">Passenger side</button>
+            </div>
+            <button class="btn-ghost px-4 py-2 mono text-xs font-bold" onclick="alert('Free PDF preview coming soon!')">
+              ↓ PREVIEW PDF
+            </button>
+          </div>
+          <div class="mt-4 flex justify-between mono text-xs text-[var(--mute)]">
+            <span>↳ Updates live as you type</span>
+            <span>No login required</span>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ── MOBILE sticky bottom preview ── -->
+    <div class="lg:hidden fixed bottom-0 inset-x-0 z-30 border-t-2 border-black bg-[var(--ink)]"
+         style="padding-bottom:env(safe-area-inset-bottom,0px)">
+      <div class="px-4 py-3 flex items-center gap-4 max-w-7xl mx-auto">
+        <!-- Text sticker preview (design mode) -->
+        <div id="mob-sticker" class="mob-mini-sticker bg-white border border-black p-2 text-center shrink-0"
+             style="min-width:155px; max-width:190px; box-shadow:2px 2px 0 rgba(255,255,255,0.25)">
+          <div id="mob-company" class="font-black text-xs leading-tight truncate">YOUR COMPANY</div>
+          <div class="h-px w-8 mx-auto my-1 bg-[var(--rust)]"></div>
+          <div class="mono text-[9px]">USDOT <span id="mob-usdot" class="font-bold">———</span></div>
+          <div class="mono text-[9px] mt-0.5">MC <span id="mob-mc" class="font-bold">———</span></div>
+        </div>
+        <!-- Upload image preview (upload mode) -->
+        <img id="mob-upload-img" src="" alt=""
+          class="hidden shrink-0 object-contain border border-black bg-white"
+          style="height:64px; max-width:120px; box-shadow:2px 2px 0 rgba(255,255,255,0.25)" />
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div id="mob-mode-label" class="mono text-[10px] text-[var(--signal)] uppercase tracking-widest">Live Preview</div>
+          <div class="mono text-[9px] text-[var(--paper)] opacity-60 mt-0.5">Driver side · 2.5" letters</div>
+        </div>
+        <div class="shrink-0 text-right">
+          <div class="mono text-[10px] text-[var(--paper)] opacity-40">STEP</div>
+          <div class="mono text-[var(--signal)] font-bold text-sm">1/3</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── State ──────────────────────────────────────────────────────────────
+      const state = {
+        mode: 'design',   // 'design' | 'upload'
+        name:'', usdot:'', mc:'', noMc:false, tagline:'', template:'classic', color:'bw', side:'driver',
+        uploadUrl: null,  // compressed data URL or null
+        uploadName: null,
+      };
+
+      // Load from localStorage
+      try {
+        const s = JSON.parse(localStorage.getItem('dot_builder') || '{}');
+        Object.assign(state, s);
+        // never persist uploadUrl between hard reloads (it's large and step-specific)
+        state.uploadUrl  = null;
+        state.uploadName = null;
+      } catch(e) {}
+
+      // Check URL param for mode
+      if (new URLSearchParams(location.search).get('mode') === 'upload') {
+        state.mode = 'upload';
+      }
+
+      // ── DOM refs ──────────────────────────────────────────────────────────
+      const fName    = document.getElementById('f-name');
+      const fUsdot   = document.getElementById('f-usdot');
+      const fMc      = document.getElementById('f-mc');
+      const fTagline = document.getElementById('f-tagline');
+      const noMcChk  = document.getElementById('no-mc');
+      const noMcLbl  = document.getElementById('no-mc-label');
+      const mcWrap   = document.getElementById('mc-wrap');
+      const nameErr  = document.getElementById('name-err');
+      const usdotErr = document.getElementById('usdot-err');
+      const nameCnt  = document.getElementById('name-count');
+      const usdotCnt = document.getElementById('usdot-count');
+      const btnCont  = document.getElementById('btn-continue');
+      const ctaTip   = document.getElementById('cta-tip');
+      const colorCard  = document.getElementById('color-card');
+      const taglineWrap= document.getElementById('tagline-wrap');
+
+      const modeBtnDesign = document.getElementById('mode-design');
+      const modeBtnUpload = document.getElementById('mode-upload');
+      const designPanels  = document.getElementById('design-panels');
+      const uploadPanel   = document.getElementById('upload-panel');
+
+      const doorSticker     = document.getElementById('door-sticker');
+      const doorUploadImg   = document.getElementById('door-upload-img');
+      const doorUploadPrompt= document.getElementById('door-upload-prompt');
+      const sComp  = document.getElementById('s-company');
+      const sUsdot = document.getElementById('s-usdot');
+      const sMc    = document.getElementById('s-mc');
+
+      const mobSticker   = document.getElementById('mob-sticker');
+      const mobUploadImg = document.getElementById('mob-upload-img');
+      const mobComp      = document.getElementById('mob-company');
+      const mobUsdot     = document.getElementById('mob-usdot');
+      const mobMc        = document.getElementById('mob-mc');
+      const mobModeLabel = document.getElementById('mob-mode-label');
+
+      const dropZone   = document.getElementById('drop-zone');
+      const fileInput  = document.getElementById('file-input');
+      const dzIdle     = document.getElementById('dz-idle');
+      const dzPreview  = document.getElementById('dz-preview');
+      const dzError    = document.getElementById('dz-error');
+      const previewThumb = document.getElementById('preview-thumb');
+      const previewName  = document.getElementById('preview-name');
+      const previewSize  = document.getElementById('preview-size');
+
+      // ── Populate fields from state ─────────────────────────────────────────
+      fName.value    = state.name;
+      fUsdot.value   = state.usdot;
+      fMc.value      = state.mc;
+      fTagline.value = state.tagline;
+      noMcChk.checked= state.noMc;
+      nameCnt.textContent  = `${state.name.length}/60`;
+      usdotCnt.textContent = `${state.usdot.length}/8`;
+      if (state.noMc) fMc.disabled = true;
+
+      // ── Sticker flash ──────────────────────────────────────────────────────
+      let flashTimer = null;
+      function flash() {
+        clearTimeout(flashTimer);
+        if (state.mode === 'design') {
+          doorSticker.classList.add('flash');
+          if (mobSticker) mobSticker.style.background = 'var(--signal)';
+          flashTimer = setTimeout(() => {
+            doorSticker.classList.remove('flash');
+            if (mobSticker) mobSticker.style.background = '';
+          }, 80);
+        }
+      }
+
+      // ── Live preview (design mode) ─────────────────────────────────────────
+      let dbTimer = null;
+      function scheduleUpdate() { clearTimeout(dbTimer); dbTimer = setTimeout(updateAll, 80); }
+
+      function updateAll() {
+        const name  = (state.name.trim()  || 'YOUR COMPANY').toUpperCase();
+        const usdot = state.usdot.trim()  || '———';
+        const mc    = state.noMc ? 'N/A'  : (state.mc.trim() || '———');
+        const trunc = name.length > 18 ? name.slice(0,17) + '…' : name;
+
+        sComp.textContent  = name;
+        sUsdot.textContent = usdot;
+        sMc.textContent    = mc;
+        mobComp.textContent  = name;
+        mobUsdot.textContent = usdot;
+        mobMc.textContent    = mc;
+
+        ['mc-name','mf-name','mh-name'].forEach(id => {
+          const el = document.getElementById(id); if (el) el.textContent = trunc;
+        });
+        document.getElementById('mc-usdot').textContent = state.usdot || '———';
+        document.getElementById('mc-mc').textContent    = mc;
+        document.getElementById('mf-usdot').textContent = state.usdot || '———';
+        document.getElementById('mf-mc').textContent    = mc;
+        document.getElementById('mh-usdot').textContent = state.usdot || '———';
+
+        applyTemplate(state.template);
+        flash();
+      }
+
+      // ── Template styles ────────────────────────────────────────────────────
+      const TPL = {
+        classic: { bg:'#fff',          color:'var(--ink)',  border:'solid',  fs:'1.35rem', ls:'-0.02em' },
+        fleet:   { bg:'var(--paper)',  color:'var(--ink)',  border:'solid',  fs:'1.15rem', ls:'0' },
+        heavy:   { bg:'var(--signal)', color:'var(--ink)',  border:'solid',  fs:'1.9rem',  ls:'-0.04em' },
+        custom:  { bg:'#fff',          color:'var(--rust)', border:'dashed', fs:'1.35rem', ls:'0' },
+      };
+      function applyTemplate(tpl) {
+        const s = TPL[tpl] || TPL.classic;
+        doorSticker.style.background  = s.bg;
+        doorSticker.style.color       = s.color;
+        doorSticker.style.borderStyle = s.border;
+        sComp.style.fontSize          = s.fs;
+        sComp.style.letterSpacing     = s.ls;
+      }
+
+      // ── MODE SWITCHING ─────────────────────────────────────────────────────
+      function switchMode(mode) {
+        state.mode = mode;
+
+        if (mode === 'design') {
+          modeBtnDesign.classList.add('active');    modeBtnDesign.setAttribute('aria-selected','true');
+          modeBtnUpload.classList.remove('active'); modeBtnUpload.setAttribute('aria-selected','false');
+          designPanels.classList.remove('hidden');
+          uploadPanel.classList.add('hidden');
+          // MC + tagline visible
+          mcWrap.classList.remove('hidden');
+          noMcLbl.classList.remove('hidden');
+          // Door: text sticker
+          doorSticker.classList.remove('hidden');
+          doorUploadImg.classList.add('hidden');
+          doorUploadPrompt.classList.add('hidden');
+          doorUploadPrompt.classList.remove('flex');
+          // Mobile: text
+          mobSticker.classList.remove('hidden');
+          mobUploadImg.classList.add('hidden');
+          mobModeLabel.textContent = 'Live Preview';
+        } else {
+          modeBtnUpload.classList.add('active');    modeBtnUpload.setAttribute('aria-selected','true');
+          modeBtnDesign.classList.remove('active'); modeBtnDesign.setAttribute('aria-selected','false');
+          designPanels.classList.add('hidden');
+          uploadPanel.classList.remove('hidden');
+          // Hide MC / tagline in upload mode
+          mcWrap.classList.add('hidden');
+          noMcLbl.classList.add('hidden');
+          taglineWrap.classList.add('hidden');
+          // Door: show uploaded image or prompt
+          doorSticker.classList.add('hidden');
+          if (state.uploadUrl) {
+            doorUploadImg.src = state.uploadUrl;
+            doorUploadImg.classList.remove('hidden');
+            doorUploadPrompt.classList.add('hidden');
+            doorUploadPrompt.classList.remove('flex');
+          } else {
+            doorUploadImg.classList.add('hidden');
+            doorUploadPrompt.classList.remove('hidden');
+            doorUploadPrompt.classList.add('flex');
+          }
+          // Mobile: show upload image or text sticker
+          if (state.uploadUrl) {
+            mobUploadImg.src = state.uploadUrl;
+            mobUploadImg.classList.remove('hidden');
+            mobSticker.classList.add('hidden');
+          } else {
+            mobSticker.classList.remove('hidden');
+            mobUploadImg.classList.add('hidden');
+          }
+          mobModeLabel.textContent = 'Upload Preview';
+        }
+
+        updateCta();
+      }
+
+      modeBtnDesign.addEventListener('click', () => switchMode('design'));
+      modeBtnUpload.addEventListener('click', () => switchMode('upload'));
+
+      // ── VALIDATION ─────────────────────────────────────────────────────────
+      let nameBlurred = false, usdotBlurred = false;
+
+      function validateName() {
+        const ok = state.name.trim().length > 0;
+        if (nameBlurred) {
+          fName.classList.toggle('is-error', !ok);
+          fName.classList.toggle('is-valid',  ok);
+          nameErr.classList.toggle('visible', !ok);
+        }
+        return ok;
+      }
+      function validateUsdot() {
+        const ok = /^\d{5,8}$/.test(state.usdot.trim());
+        if (usdotBlurred) {
+          fUsdot.classList.toggle('is-error', !ok);
+          fUsdot.classList.toggle('is-valid',  ok);
+          usdotErr.classList.toggle('visible', !ok);
+        }
+        return ok;
+      }
+
+      function updateCta() {
+        const nameOk  = validateName();
+        const usdotOk = validateUsdot();
+
+        if (state.mode === 'design') {
+          btnCont.disabled = !(nameOk && usdotOk);
+          if (!nameOk)       ctaTip.textContent = 'Company name is required.';
+          else if (!usdotOk) ctaTip.textContent = 'USDOT must be 5–8 digits.';
+          else               ctaTip.textContent = '';
+        } else {
+          const fileOk = !!state.uploadUrl;
+          btnCont.disabled = !(nameOk && usdotOk && fileOk);
+          if (!fileOk)       ctaTip.textContent = 'Upload your sticker design first.';
+          else if (!nameOk)  ctaTip.textContent = 'Company name is required.';
+          else if (!usdotOk) ctaTip.textContent = 'USDOT must be 5–8 digits.';
+          else               ctaTip.textContent = '';
+        }
+      }
+
+      // ── Field events ───────────────────────────────────────────────────────
+      fName.addEventListener('input', () => {
+        state.name = fName.value;
+        nameCnt.textContent = `${state.name.length}/60`;
+        scheduleUpdate(); updateCta();
+      });
+      fName.addEventListener('blur', () => { nameBlurred = true; validateName(); updateCta(); });
+
+      fUsdot.addEventListener('input', () => {
+        fUsdot.value = fUsdot.value.replace(/\D/g,'');
+        state.usdot  = fUsdot.value;
+        const len = state.usdot.length;
+        usdotCnt.textContent = `${len}/8`;
+        usdotCnt.classList.toggle('warn', len >= 6 && len < 8);
+        scheduleUpdate(); updateCta();
+      });
+      fUsdot.addEventListener('blur', () => { usdotBlurred = true; validateUsdot(); updateCta(); });
+
+      fMc.addEventListener('input', () => {
+        fMc.value = fMc.value.replace(/\D/g,''); state.mc = fMc.value; scheduleUpdate();
+      });
+      noMcChk.addEventListener('change', () => {
+        state.noMc = noMcChk.checked; fMc.disabled = state.noMc; scheduleUpdate();
+      });
+      fTagline.addEventListener('input', () => { state.tagline = fTagline.value; });
+
+      // ── Template cards ─────────────────────────────────────────────────────
+      document.querySelectorAll('.tpl-card').forEach(card => {
+        const activate = () => {
+          document.querySelectorAll('.tpl-card').forEach(c => {
+            c.classList.remove('selected'); c.setAttribute('aria-checked','false');
+          });
+          card.classList.add('selected'); card.setAttribute('aria-checked','true');
+          state.template = card.dataset.tpl;
+          taglineWrap.classList.toggle('hidden', !['fleet','custom'].includes(state.template));
+          colorCard.classList.toggle('hidden', state.template !== 'custom');
+          applyTemplate(state.template); flash();
+        };
+        card.addEventListener('click', activate);
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(); });
+      });
+
+      // ── Color swatches ─────────────────────────────────────────────────────
+      document.querySelectorAll('.swatch').forEach(sw => {
+        sw.addEventListener('click', () => {
+          document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+          sw.classList.add('selected'); state.color = sw.dataset.color;
+        });
+      });
+
+      // ── Driver / Passenger toggle ──────────────────────────────────────────
+      document.getElementById('btn-driver').addEventListener('click', () => {
+        state.side = 'driver';
+        document.getElementById('btn-driver').classList.add('active');
+        document.getElementById('btn-passenger').classList.remove('active');
+        doorSticker.style.transform = '';
+        doorUploadImg.style.transform = '';
+        document.getElementById('side-badge').textContent = 'DRIVER SIDE · 2.5" letters';
+      });
+      document.getElementById('btn-passenger').addEventListener('click', () => {
+        state.side = 'passenger';
+        document.getElementById('btn-passenger').classList.add('active');
+        document.getElementById('btn-driver').classList.remove('active');
+        doorSticker.style.transform = 'scaleX(-1)';
+        doorUploadImg.style.transform = 'scaleX(-1)';
+        document.getElementById('side-badge').textContent = 'PASSENGER SIDE · 2.5" letters';
+      });
+
+      // ══════════════════════════════════════════════════════════════════════
+      //  FILE UPLOAD
+      // ══════════════════════════════════════════════════════════════════════
+      const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+      const ALLOWED  = ['image/png','image/jpeg','image/jpg','image/svg+xml','image/webp'];
+
+      function fmtSize(b) {
+        if (b < 1024)       return `${b} B`;
+        if (b < 1024*1024)  return `${(b/1024).toFixed(1)} KB`;
+        return `${(b/1024/1024).toFixed(1)} MB`;
+      }
+
+      function showDzError(msg) {
+        dzError.textContent = msg;
+        dzError.classList.remove('hidden');
+        dropZone.classList.add('is-error');
+        setTimeout(() => { dzError.classList.add('hidden'); dropZone.classList.remove('is-error'); }, 4000);
+      }
+
+      function compressToDataUrl(file, cb) {
+        // SVG: pass through as-is (already scalable)
+        if (file.type === 'image/svg+xml') {
+          const r = new FileReader();
+          r.onload = e => cb(e.target.result);
+          r.readAsDataURL(file);
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 900;
+          const scale = Math.min(1, maxW / img.naturalWidth);
+          const canvas = document.createElement('canvas');
+          canvas.width  = Math.round(img.naturalWidth  * scale);
+          canvas.height = Math.round(img.naturalHeight * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          cb(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); cb(null); };
+        img.src = url;
+      }
+
+      function applyUpload(file) {
+        dzError.classList.add('hidden');
+
+        if (!ALLOWED.includes(file.type)) {
+          showDzError('Unsupported format. Please use PNG, JPG, or SVG.');
+          return;
+        }
+        if (file.size > MAX_SIZE) {
+          showDzError(`File is too large (${fmtSize(file.size)}). Maximum is 10 MB.`);
+          return;
+        }
+
+        compressToDataUrl(file, dataUrl => {
+          if (!dataUrl) { showDzError('Could not read the file. Please try another.'); return; }
+
+          state.uploadUrl  = dataUrl;
+          state.uploadName = file.name;
+
+          // Drop zone: idle → preview
+          dzIdle.classList.add('hidden');
+          dzPreview.classList.remove('hidden');
+          previewThumb.src          = dataUrl;
+          previewName.textContent   = file.name;
+          previewSize.textContent   = fmtSize(file.size);
+          dropZone.classList.add('has-file');
+
+          // Door: show image
+          doorUploadImg.src = dataUrl;
+          doorUploadImg.classList.remove('hidden');
+          doorUploadPrompt.classList.add('hidden');
+          doorUploadPrompt.classList.remove('flex');
+
+          // Mobile: show image
+          mobUploadImg.src = dataUrl;
+          mobUploadImg.classList.remove('hidden');
+          mobSticker.classList.add('hidden');
+
+          updateCta();
+        });
+      }
+
+      function clearUpload() {
+        state.uploadUrl  = null;
+        state.uploadName = null;
+        fileInput.value  = '';
+        dzIdle.classList.remove('hidden');
+        dzPreview.classList.add('hidden');
+        dropZone.classList.remove('has-file');
+        doorUploadImg.src = '';
+        doorUploadImg.classList.add('hidden');
+        doorUploadPrompt.classList.remove('hidden');
+        doorUploadPrompt.classList.add('flex');
+        mobUploadImg.src = '';
+        mobUploadImg.classList.add('hidden');
+        mobSticker.classList.remove('hidden');
+        updateCta();
+      }
+
+      // Click drop zone → open picker
+      dropZone.addEventListener('click', e => {
+        if (e.target.id === 'remove-upload') return;
+        fileInput.click();
+      });
+      document.getElementById('dz-browse-btn').addEventListener('click', e => {
+        e.stopPropagation(); fileInput.click();
+      });
+
+      // Keyboard: Enter/Space on drop zone
+      dropZone.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+      });
+
+      // File picker change
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files[0]) applyUpload(fileInput.files[0]);
+      });
+
+      // Remove button
+      document.getElementById('remove-upload').addEventListener('click', e => {
+        e.stopPropagation(); clearUpload();
+      });
+
+      // Drag & Drop
+      ['dragenter','dragover'].forEach(evt => {
+        dropZone.addEventListener(evt, e => {
+          e.preventDefault(); e.stopPropagation();
+          dropZone.classList.add('drag-over');
+        });
+      });
+      ['dragleave','dragend'].forEach(evt => {
+        dropZone.addEventListener(evt, e => {
+          if (!dropZone.contains(e.relatedTarget)) dropZone.classList.remove('drag-over');
+        });
+      });
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault(); e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file) applyUpload(file);
+      });
+
+      // Also allow drag-and-drop on the whole door (desktop)
+      const doorEl = document.querySelector('.truck-door');
+      if (doorEl) {
+        ['dragenter','dragover'].forEach(evt => doorEl.addEventListener(evt, e => {
+          if (state.mode === 'upload') { e.preventDefault(); dropZone.classList.add('drag-over'); }
+        }));
+        doorEl.addEventListener('drop', e => {
+          if (state.mode !== 'upload') return;
+          e.preventDefault(); dropZone.classList.remove('drag-over');
+          const file = e.dataTransfer.files[0];
+          if (file) { switchMode('upload'); applyUpload(file); }
+        });
+      }
+
+      // ── Continue ───────────────────────────────────────────────────────────
+      btnCont.addEventListener('click', () => {
+        nameBlurred = true; usdotBlurred = true;
+        if (!validateName() || !validateUsdot()) {
+          updateCta();
+          const first = document.querySelector('.field-input.is-error');
+          if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+          return;
+        }
+        if (state.mode === 'upload' && !state.uploadUrl) {
+          dropZone.scrollIntoView({ behavior:'smooth', block:'center' });
+          return;
+        }
+        // Save to localStorage
+        const toSave = { ...state };
+        // Try to save uploadUrl; catch if storage is full
+        try {
+          localStorage.setItem('dot_builder', JSON.stringify(toSave));
+        } catch(e) {
+          // If quota exceeded, save without the data URL
+          toSave.uploadUrl = null;
+          localStorage.setItem('dot_builder', JSON.stringify(toSave));
+          // Keep it in sessionStorage for this session
+          try { sessionStorage.setItem('dot_upload_img', state.uploadUrl || ''); } catch(_) {}
+        }
+        window.location.href = 'step-2.html';
+      });
+
+      // ── Boot ───────────────────────────────────────────────────────────────
+      // Restore template selection
+      document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('selected'));
+      const savedCard = document.querySelector(`.tpl-card[data-tpl="${state.template}"]`);
+      if (savedCard) { savedCard.classList.add('selected'); savedCard.setAttribute('aria-checked','true'); }
+      if (['fleet','custom'].includes(state.template)) taglineWrap.classList.remove('hidden');
+      if (state.template === 'custom') colorCard.classList.remove('hidden');
+
+      // Apply initial mode (from URL param or saved state)
+      switchMode(state.mode);
+      updateAll();
+      updateCta();
+    </script>
+  </body>
+</html>
