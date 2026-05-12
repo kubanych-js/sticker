@@ -1,5 +1,6 @@
 import { AppLayout } from '../../layouts/AppLayout';
 import { HeroSection } from './components/HeroSection';
+import { LivePreviewSection } from './components/LivePreviewSection';
 import { HowItWorks } from './components/HowItWorks';
 import { TemplatesSection } from './components/TemplatesSection';
 import { PricingSection } from './components/PricingSection';
@@ -12,6 +13,7 @@ export function LandingPage() {
   return (
     <AppLayout>
       <HeroSection />
+      <LivePreviewSection />
       <HowItWorks />
       <TemplatesSection />
       <PricingSection />
